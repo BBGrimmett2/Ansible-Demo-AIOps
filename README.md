@@ -42,7 +42,7 @@ flowchart TD
         WF["Remediation Workflow"]
         AI["AI Model Inference\n(Error Analysis)"]
         JT["Job Template Inference\n(Remediation Match?)"]
-        REM["▶ Run Remediation\nJob Template"]
+        REM["Run Remediation\nJob Template"]
     end
 
     subgraph integrations["Integrations"]
