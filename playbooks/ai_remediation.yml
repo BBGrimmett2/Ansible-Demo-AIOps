@@ -10,8 +10,8 @@
     # ai_inference_api_key: "{{ vault_ai_api_key }}"
 
     ai_inference_aap_job_templates:
-      - "CPU - Increase Allocation"
-      - "CPU - Kill Top Process"
+      - "AI Ops - CPU Increase Allocation"
+      - "AI Ops - CPU Kill Top Process"
 
     aap_host: "{{ lookup('env', 'AAP_HOSTNAME') }}"
     aap_token: "{{ vault_aap_token }}"
