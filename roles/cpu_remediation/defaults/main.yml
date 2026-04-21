@@ -13,3 +13,8 @@ cpu_remediation_max_increase_pct: 10   # never allocate more than this % above c
 # --- Kill top process path ---
 cpu_remediation_kill_signal: "SIGTERM"
 cpu_remediation_cpu_threshold: 80       # only kill if process is above this % CPU
+
+# --- CPU check path ---
+cpu_remediation_max_tokens: 2000        # max_tokens forwarded to the AI inference job via set_stats
+# cpu_remediation_os: ""               # required at runtime: OS label from inventory/extra vars
+                                        # e.g. "rhel9", "Red Hat BYOL Linux", "Windows", "2016 Datacenter"
