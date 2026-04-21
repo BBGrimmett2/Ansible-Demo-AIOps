@@ -13,6 +13,16 @@
     fail_msg: "AI response is missing required fields or returned an invalid action."
     success_msg: "AI recommendation parsed successfully — action: {{ ai_inference_recommendation['action'] }}"
 
+- name: Fail when recommended job template is not in the available list
+  ansible.builtin.fail:
+    msg: >-
+      AI recommended job template '{{ ai_inference_recommendation['job_template'] }}'
+      does not match any available template. Available: {{ ai_inference_aap_job_templates | join(', ') }}.
+      Manual intervention required.
+  when:
+    - ai_inference_recommendation['action'] == 'remediate'
+    - ai_inference_recommendation['job_template'] not in ai_inference_aap_job_templates
+
 - name: Log recommendation
   ansible.builtin.debug:
     msg:
