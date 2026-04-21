@@ -112,13 +112,13 @@ flowchart TD
 
 | Template | Playbook | Purpose |
 |---|---|---|
-| CPU - Stress | `cpu_stress.yml` | Pin all vCPUs to >80% to trigger an alert |
-| CPU - Increase Allocation | `cpu_increase_allocation.yml` | Increase Proxmox VM CPU (automated remediation) |
-| CPU - Kill Top Process | `cpu_kill_top_process.yml` | Kill top CPU process (automated remediation) |
-| AI Remediation | `ai_remediation.yml` | AI inference + launch matched job template |
-| SNOW - Create Incident | `snow_create_incident.yml` | Open ServiceNow incident |
-| SNOW - Update Incident | `snow_update_incident.yml` | Update/resolve ServiceNow incident |
-| GitHub Issue | `github_issue.yml` | Escalate with a GitHub issue |
+| AI Ops - CPU Stress | `cpu_stress.yml` | Pin all vCPUs to >80% to trigger an alert |
+| AI Ops - CPU Increase Allocation | `cpu_increase_allocation.yml` | Increase Proxmox VM CPU (automated remediation) |
+| AI Ops - CPU Kill Top Process | `cpu_kill_top_process.yml` | Kill top CPU process (automated remediation) |
+| AI Ops - AI Remediation | `ai_remediation.yml` | AI inference + launch matched job template |
+| AI Ops - SNOW Create Incident | `snow_create_incident.yml` | Open ServiceNow incident |
+| AI Ops - SNOW Update Incident | `snow_update_incident.yml` | Update/resolve ServiceNow incident |
+| AI Ops - GitHub Issue | `github_issue.yml` | Escalate with a GitHub issue |
 
 ### Remediation Workflow
 

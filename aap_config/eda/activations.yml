@@ -1,24 +1,26 @@
 ---
-eda_rulebook_activations:
+# eda_rulebook_activations:
 
-  - name: AIOps CPU Alert - Webhook
-    description: Listen for CPU alert webhooks and trigger the AIOps remediation workflow
-    project: Ansible AIOps
-    rulebook: rulebooks/webhook_rulebook.yml
-    decision_environment: Default Decision Environment
-    enabled: true
-    restart_policy: on-failure
-    extra_vars:
-      controller_host: "{{ lookup('env', 'AAP_HOSTNAME') }}"
-      controller_token: "{{ lookup('env', 'AAP_TOKEN') }}"
+#   - name: AIOps CPU Alert - Webhook
+#     description: Listen for CPU alert webhooks and trigger the AIOps remediation workflow
+#     project: Ansible AIOps
+#     organization: AIOps
+#     rulebook: rulebooks/webhook_rulebook.yml
+#     decision_environment: Default Decision Environment
+#     enabled: true
+#     restart_policy: on-failure
+#     extra_vars:
+#       controller_host: "{{ lookup('env', 'AAP_HOSTNAME') }}"
+#       controller_token: "{{ lookup('env', 'AAP_TOKEN') }}"
 
-  - name: AIOps CPU Alert - Range (Demo)
-    description: Simulated event source for demo and testing of the remediation workflow
-    project: Ansible AIOps
-    rulebook: rulebooks/range_rulebook.yml
-    decision_environment: Default Decision Environment
-    enabled: false
-    restart_policy: always
-    extra_vars:
-      controller_host: "{{ lookup('env', 'AAP_HOSTNAME') }}"
-      controller_token: "{{ lookup('env', 'AAP_TOKEN') }}"
+#   - name: AIOps CPU Alert - Range (Demo)
+#     description: Simulated event source for demo and testing of the remediation workflow
+#     project: Ansible AIOps
+#     organization: AIOps
+#     rulebook: rulebooks/range_rulebook.yml
+#     decision_environment: Default Decision Environment
+#     enabled: false
+#     restart_policy: always
+#     extra_vars:
+#       controller_host: "{{ lookup('env', 'AAP_HOSTNAME') }}"
+#       controller_token: "{{ lookup('env', 'AAP_TOKEN') }}"

@@ -3,12 +3,14 @@
 # Ensure that playbook publishes: set_stats(data={servicenow_incident_number: ...}, per_host=false)
 controller_workflow_job_templates:
 
-  - name: AIOps - CPU Remediation Workflow
+  - name: AI Ops - CPU Remediation Workflow
     description: >-
       End-to-end AI-driven CPU remediation: open SNOW incident → AI inference →
       automated remediation or GitHub escalation → close/update SNOW incident.
     organization: AIOps
     ask_variables_on_launch: true
+    labels:
+      - aiops
     survey_enabled: true
     survey_spec:
       name: ""
@@ -43,7 +45,7 @@ controller_workflow_job_templates:
 
       - identifier: create-snow-incident
         unified_job_template:
-          name: SNOW - Create Incident
+          name: AI Ops - SNOW Create Incident
           organization: AIOps
           type: job_template
         related:
@@ -52,7 +54,7 @@ controller_workflow_job_templates:
 
       - identifier: ai-remediation
         unified_job_template:
-          name: AI Remediation
+          name: AI Ops - AI Remediation
           organization: AIOps
           type: job_template
         related:
@@ -63,7 +65,7 @@ controller_workflow_job_templates:
 
       - identifier: snow-update-resolved
         unified_job_template:
-          name: SNOW - Update Incident
+          name: AI Ops - SNOW Update Incident
           organization: AIOps
           type: job_template
         extra_data:
@@ -73,7 +75,7 @@ controller_workflow_job_templates:
 
       - identifier: github-issue
         unified_job_template:
-          name: GitHub Issue
+          name: AI Ops - GitHub Issue
           organization: AIOps
           type: job_template
         related:
@@ -82,7 +84,7 @@ controller_workflow_job_templates:
 
       - identifier: snow-update-escalated
         unified_job_template:
-          name: SNOW - Update Incident
+          name: AI Ops - SNOW Update Incident
           organization: AIOps
           type: job_template
         extra_data:

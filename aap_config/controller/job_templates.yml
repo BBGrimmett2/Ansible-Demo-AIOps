@@ -1,8 +1,10 @@
 ---
 controller_templates:
 
-  - name: CPU - Stress
-    description: Stress all vCPUs on a managed node to >80% utilization to trigger an alert
+  - name: AI Ops - CPU Stress
+    description: >-
+      Stress all vCPUs on a target managed node to sustained >80% utilization.
+      Used to simulate a CPU alert and trigger the full AIOps remediation workflow via EDA.
     organization: AIOps
     project: Ansible AIOps
     playbook: playbooks/cpu_stress.yml
@@ -10,12 +12,16 @@ controller_templates:
     credentials:
       - AIOps Machine
     ask_limit_on_launch: true
+    labels:
+      - aiops
     extra_vars:
       cpu_stress_load: 85
       cpu_stress_timeout: 300
 
-  - name: CPU - Increase Allocation
-    description: Increase Proxmox VM CPU allocation by up to 10%
+  - name: AI Ops - CPU Increase Allocation
+    description: >-
+      Increase the CPU core count on a Proxmox VM by up to 10% of its current allocation.
+      Automated remediation path for sustained high CPU utilization caused by resource starvation.
     organization: AIOps
     project: Ansible AIOps
     playbook: playbooks/cpu_increase_allocation.yml
@@ -23,6 +29,8 @@ controller_templates:
     credentials:
       - AIOps Proxmox
     ask_variables_on_launch: true
+    labels:
+      - aiops
     survey_enabled: true
     survey_spec:
       name: ""
@@ -40,8 +48,10 @@ controller_templates:
           required: false
           default: pve
 
-  - name: CPU - Kill Top Process
-    description: Identify and kill the top CPU-consuming process on a managed node
+  - name: AI Ops - CPU Kill Top Process
+    description: >-
+      Identify the top CPU-consuming process on a managed node and terminate it.
+      Automated remediation path for high CPU caused by a runaway or misbehaving process.
     organization: AIOps
     project: Ansible AIOps
     playbook: playbooks/cpu_kill_top_process.yml
@@ -49,6 +59,8 @@ controller_templates:
     credentials:
       - AIOps Machine
     ask_variables_on_launch: true
+    labels:
+      - aiops
     survey_enabled: true
     survey_spec:
       name: ""
@@ -67,8 +79,11 @@ controller_templates:
           default: SIGTERM
           choices: "SIGTERM\nSIGKILL"
 
-  - name: AI Remediation
-    description: Run AI inference on an error and launch the appropriate remediation job template
+  - name: AI Ops - AI Remediation
+    description: >-
+      Send the error context to an AI model for inference. The AI analyzes the error,
+      matches it against available job templates, and launches the best remediation automatically.
+      Falls through to escalation if no confident match is found.
     organization: AIOps
     project: Ansible AIOps
     playbook: playbooks/ai_remediation.yml
@@ -77,6 +92,8 @@ controller_templates:
       - AIOps AI API
       - AIOps AAP Token
     ask_variables_on_launch: true
+    labels:
+      - aiops
     survey_enabled: true
     survey_spec:
       name: ""
@@ -93,8 +110,10 @@ controller_templates:
           type: text
           required: true
 
-  - name: SNOW - Create Incident
-    description: Open a new ServiceNow incident
+  - name: AI Ops - SNOW Create Incident
+    description: >-
+      Open a new ServiceNow incident. Short description and full description are populated
+      by the AI inference recommendation. Publishes the incident number for downstream workflow nodes.
     organization: AIOps
     project: Ansible AIOps
     playbook: playbooks/snow_create_incident.yml
@@ -102,6 +121,8 @@ controller_templates:
     credentials:
       - AIOps ServiceNow
     ask_variables_on_launch: true
+    labels:
+      - aiops
     survey_enabled: true
     survey_spec:
       name: ""
@@ -132,8 +153,11 @@ controller_templates:
           default: medium
           choices: "low\nmedium\nhigh"
 
-  - name: SNOW - Update Incident
-    description: Update an existing ServiceNow incident state and resolution notes
+  - name: AI Ops - SNOW Update Incident
+    description: >-
+      Update the state and resolution notes of an existing ServiceNow incident.
+      Used by the workflow to mark incidents resolved after successful remediation,
+      or in_progress when escalated for manual intervention.
     organization: AIOps
     project: Ansible AIOps
     playbook: playbooks/snow_update_incident.yml
@@ -141,6 +165,8 @@ controller_templates:
     credentials:
       - AIOps ServiceNow
     ask_variables_on_launch: true
+    labels:
+      - aiops
     survey_enabled: true
     survey_spec:
       name: ""
@@ -164,8 +190,11 @@ controller_templates:
           type: textarea
           required: false
 
-  - name: GitHub Issue
-    description: Open a GitHub issue requesting manual remediation
+  - name: AI Ops - GitHub Issue
+    description: >-
+      Open a GitHub issue in the AIOps repository requesting manual remediation.
+      Includes the AI reasoning, affected host, ServiceNow incident reference,
+      and a suggested outline for a new automated remediation to be added to the project.
     organization: AIOps
     project: Ansible AIOps
     playbook: playbooks/github_issue.yml
@@ -173,6 +202,8 @@ controller_templates:
     credentials:
       - AIOps GitHub
     ask_variables_on_launch: true
+    labels:
+      - aiops
     survey_enabled: true
     survey_spec:
       name: ""

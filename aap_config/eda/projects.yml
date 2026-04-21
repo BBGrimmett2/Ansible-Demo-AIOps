@@ -1,6 +1,10 @@
 ---
 eda_projects:
   - name: Ansible AIOps
-    description: AIOps rulebooks for CPU alert detection and remediation dispatch
-    url: "https://github.com/Megalith-Development/Ansible-Demo-AIOps"
-    verify_ssl: true
+    description: AI-driven operations automation — CPU remediation, SNOW incidents, GitHub escalation
+    organization: AIOps
+    scm_type: git
+    scm_url: "https://github.com/BBGrimmett2/Ansible-Demo-AIOps.git"
+    scm_branch: devel # CHANGE ME BEFORE PRODUCTION USE!
+    scm_update_on_launch: true
+    scm_clean: false
