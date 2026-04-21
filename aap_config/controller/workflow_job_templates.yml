@@ -6,7 +6,10 @@ controller_workflow_job_templates:
   - name: AI Ops - CPU Remediation Workflow
     description: >-
       End-to-end AI-driven CPU remediation: open SNOW incident → AI inference →
-      automated remediation or GitHub escalation → close/update SNOW incident.
+      automated remediation or escalation → close/update SNOW incident.
+      Remediation succeeds when the AI matches a known job template and launches it.
+      Escalation (GitHub issue + SNOW update) is triggered when the AI recommends
+      an unrecognised job template or determines no template can address the error.
     organization: AIOps
     ask_variables_on_launch: true
     labels:
@@ -89,4 +92,7 @@ controller_workflow_job_templates:
           type: job_template
         extra_data:
           servicenow_incident_state: in_progress
-          servicenow_incident_close_notes: "Automated remediation failed. Manual intervention required — GitHub issue opened."
+          servicenow_incident_close_notes: >-
+            Automated remediation could not proceed — either no known job template
+            matched the error or the AI determined escalation was required.
+            Manual intervention required. GitHub issue opened.

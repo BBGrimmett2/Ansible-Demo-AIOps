@@ -13,7 +13,7 @@
     urgency: "{{ servicenow_incident_urgency }}"
     other: "{{ servicenow_incident_other }}"
   register: __servicenow_incident_create_result
-  no_log: true
+  # no_log: true
 
 - name: Expose created incident as a fact
   ansible.builtin.set_fact:

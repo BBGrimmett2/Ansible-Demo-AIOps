@@ -38,3 +38,10 @@
       when: ai_inference_recommendation['action'] == 'remediate'
       changed_when: true
 
+    - name: Fail to trigger escalation path when AI cannot identify a remediation
+      ansible.builtin.fail:
+        msg: >-
+          AI determined no available job template can remediate this error.
+          Reasoning: {{ ai_inference_recommendation['reasoning'] }}
+      when: ai_inference_recommendation['action'] == 'escalate'
+
