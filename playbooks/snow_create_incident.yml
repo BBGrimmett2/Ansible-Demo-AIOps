@@ -4,7 +4,7 @@
   gather_facts: false
 
   vars:
-    servicenow_incident_instance_url: "{{ lookup('env', 'SN_HOST') | default('https://instance.service-now.com') }}"
+    servicenow_incident_instance_url: "{{ vault_snow_instance_url }}"
     servicenow_incident_username: "{{ vault_snow_username }}"
     servicenow_incident_password: "{{ vault_snow_password }}"
 

@@ -1,13 +1,13 @@
 ---
 # --- Proxmox (increase_cpu path) ---
-cpu_remediation_proxmox_api_host: "proxmox.example.com"
-cpu_remediation_proxmox_node: "pve"
+cpu_remediation_proxmox_api_host: "{{ lookup('env', 'PROXMOX_HOST') | default('proxmox.example.com') }}"
+cpu_remediation_proxmox_api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
+cpu_remediation_proxmox_api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
+cpu_remediation_proxmox_api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+cpu_remediation_proxmox_node: "{{ lookup('env', 'PROXMOX_NODE') | default('pve') }}"
 cpu_remediation_max_increase_pct: 10   # never allocate more than this % above current cores
 
 # Required at runtime for increase_cpu path:
-# cpu_remediation_proxmox_api_user: ""         # e.g. "ansible@pve"
-# cpu_remediation_proxmox_api_token_id: ""     # token name, e.g. "automation"
-# cpu_remediation_proxmox_api_token_secret: "" # vault-encrypted UUID
 # cpu_remediation_proxmox_vm_id: ""            # integer VM ID
 
 # --- Kill top process path ---
