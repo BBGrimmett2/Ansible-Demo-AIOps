@@ -1,5 +1,5 @@
 ---
-- name: sub | Get current VM config from Proxmox
+- name: Get current VM config from Proxmox
   community.proxmox.proxmox_vm_info:
     api_host: "{{ cpu_remediation_proxmox_api_host }}"
     api_user: "{{ cpu_remediation_proxmox_api_user }}"
@@ -13,12 +13,12 @@
   changed_when: false
   no_log: true
 
-- name: sub | Set current core facts from VM config
+- name: Set current core facts from VM config
   ansible.builtin.set_fact:
     __cpu_remediation_current_cores: "{{ __cpu_remediation_vm_info['proxmox_vms'][0]['config']['cores'] | int }}"
     __cpu_remediation_vm_name: "{{ __cpu_remediation_vm_info['proxmox_vms'][0]['name'] }}"
 
-- name: sub | Calculate new CPU core count
+- name: Calculate new CPU core count
   ansible.builtin.set_fact:
     __cpu_remediation_new_cores: >-
       {{
@@ -29,7 +29,7 @@
         ] | min
       }}
 
-- name: sub | Report planned change
+- name: Report planned change
   ansible.builtin.debug:
     msg: >-
       Increasing VM {{ cpu_remediation_proxmox_vm_id }} ({{ __cpu_remediation_vm_name }})
@@ -37,7 +37,7 @@
       ({{ cpu_remediation_max_increase_pct }}% max increase)
     verbosity: 0
 
-- name: sub | Apply new CPU core count to VM
+- name: Apply new CPU core count to VM
   community.proxmox.proxmox_kvm:
     api_host: "{{ cpu_remediation_proxmox_api_host }}"
     api_user: "{{ cpu_remediation_proxmox_api_user }}"

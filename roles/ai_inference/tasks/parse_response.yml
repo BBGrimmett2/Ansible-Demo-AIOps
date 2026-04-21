@@ -1,9 +1,9 @@
 ---
-- name: sub | Parse JSON from AI response content
+- name: Parse JSON from AI response content
   ansible.builtin.set_fact:
     ai_inference_recommendation: "{{ __ai_inference_raw_content | from_json }}"
 
-- name: sub | Validate required fields are present
+- name: Validate required fields are present
   ansible.builtin.assert:
     that:
       - ai_inference_recommendation['action'] in ['remediate', 'escalate']
@@ -13,7 +13,7 @@
     fail_msg: "AI response is missing required fields or returned an invalid action."
     success_msg: "AI recommendation parsed successfully — action: {{ ai_inference_recommendation['action'] }}"
 
-- name: sub | Log recommendation
+- name: Log recommendation
   ansible.builtin.debug:
     msg:
       action: "{{ ai_inference_recommendation['action'] }}"

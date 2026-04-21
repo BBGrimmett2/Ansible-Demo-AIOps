@@ -1,5 +1,5 @@
 ---
-- name: sub | Build request payload
+- name: Build request payload
   ansible.builtin.set_fact:
     __ai_inference_payload:
       model: "{{ ai_inference_model }}"
@@ -16,7 +16,7 @@
             Additional context: {{ ai_inference_extra_context }}
             {% endif %}
 
-- name: sub | Send inference request to AI API
+- name: Send inference request to AI API
   ansible.builtin.uri:
     url: "{{ ai_inference_api_url }}"
     method: POST
@@ -32,7 +32,7 @@
   changed_when: false
   no_log: true
 
-- name: sub | Extract content from API response
+- name: Extract content from API response
   ansible.builtin.set_fact:
     __ai_inference_raw_content: >-
       {{ __ai_inference_api_response['json']['choices'][0]['message']['content'] }}

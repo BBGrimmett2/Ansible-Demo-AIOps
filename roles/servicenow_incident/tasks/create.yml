@@ -1,5 +1,5 @@
 ---
-- name: sub | Create ServiceNow incident
+- name: Create ServiceNow incident
   servicenow.itsm.incident:
     instance:
       host: "{{ servicenow_incident_instance_url }}"
@@ -15,11 +15,11 @@
   register: __servicenow_incident_create_result
   no_log: true
 
-- name: sub | Expose created incident as a fact
+- name: Expose created incident as a fact
   ansible.builtin.set_fact:
     servicenow_incident_result: "{{ __servicenow_incident_create_result['record'] }}"
 
-- name: sub | Report created incident number
+- name: Report created incident number
   ansible.builtin.debug:
     msg: "ServiceNow incident created: {{ servicenow_incident_result['number'] }}"
     verbosity: 0
