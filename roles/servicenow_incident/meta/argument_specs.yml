@@ -1,0 +1,107 @@
+---
+argument_specs:
+  create:
+    short_description: Create a new ServiceNow incident.
+    options:
+      servicenow_incident_instance_url:
+        type: str
+        required: false
+        default: "https://instance.service-now.com"
+        description: ServiceNow instance base URL.
+
+      servicenow_incident_username:
+        type: str
+        required: true
+        description: ServiceNow username. Encrypt with Ansible Vault.
+
+      servicenow_incident_password:
+        type: str
+        required: true
+        description: ServiceNow password. Encrypt with Ansible Vault.
+
+      servicenow_incident_caller:
+        type: str
+        required: false
+        default: "ansible"
+        description: Username of the incident caller in ServiceNow.
+
+      servicenow_incident_short_description:
+        type: str
+        required: true
+        description: Incident short description (one-line summary).
+
+      servicenow_incident_description:
+        type: str
+        required: true
+        description: Full incident description.
+
+      servicenow_incident_impact:
+        type: str
+        required: false
+        default: "medium"
+        description: "Incident impact. Choices: low, medium, high."
+
+      servicenow_incident_urgency:
+        type: str
+        required: false
+        default: "medium"
+        description: "Incident urgency. Choices: low, medium, high."
+
+      servicenow_incident_state:
+        type: str
+        required: false
+        default: "new"
+        description: "Initial incident state. Choices: new, in_progress, on_hold, resolved, closed, canceled."
+
+      servicenow_incident_other:
+        type: dict
+        required: false
+        default: {}
+        description: Additional ServiceNow fields passed as key/value pairs.
+
+  update:
+    short_description: Update an existing ServiceNow incident by number.
+    options:
+      servicenow_incident_instance_url:
+        type: str
+        required: false
+        default: "https://instance.service-now.com"
+        description: ServiceNow instance base URL.
+
+      servicenow_incident_username:
+        type: str
+        required: true
+        description: ServiceNow username. Encrypt with Ansible Vault.
+
+      servicenow_incident_password:
+        type: str
+        required: true
+        description: ServiceNow password. Encrypt with Ansible Vault.
+
+      servicenow_incident_number:
+        type: str
+        required: true
+        description: Incident number to update (e.g. INC0010001).
+
+      servicenow_incident_state:
+        type: str
+        required: true
+        description: "Target state. Choices: new, in_progress, on_hold, resolved, closed, canceled."
+
+      servicenow_incident_close_code:
+        type: str
+        required: false
+        default: "Solved (Permanently)"
+        description: Resolution close code. Required by ServiceNow when moving to resolved or closed.
+
+      servicenow_incident_close_notes:
+        type: str
+        required: false
+        default: ""
+        description: Resolution notes appended to the incident.
+
+      servicenow_incident_other:
+        type: dict
+        required: false
+        default: {}
+        description: Additional ServiceNow fields passed as key/value pairs.

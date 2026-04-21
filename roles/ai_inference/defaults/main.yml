@@ -1,0 +1,18 @@
+---
+# AI API connection
+ai_inference_api_url: "https://api.openai.com/v1/chat/completions"
+ai_inference_model: "gpt-4o"
+ai_inference_temperature: 0
+ai_inference_max_tokens: 512
+ai_inference_timeout: 60
+
+# Error context passed in at runtime (required — no meaningful defaults)
+# ai_inference_error_message: ""
+# ai_inference_target_host: ""
+# ai_inference_api_key: ""          # vault-encrypted string
+
+# Available AAP job templates the AI can recommend
+ai_inference_aap_job_templates: []
+
+# Optional free-form context appended to the user prompt
+ai_inference_extra_context: ""

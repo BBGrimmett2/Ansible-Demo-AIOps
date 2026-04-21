@@ -1,0 +1,6 @@
+---
+- name: Call AI model to infer error and recommend remediation
+  ansible.builtin.include_tasks: call_api.yml
+
+- name: Parse AI response into structured recommendation
+  ansible.builtin.include_tasks: parse_response.yml

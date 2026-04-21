@@ -1,0 +1,23 @@
+---
+- name: sub | Update ServiceNow incident
+  servicenow.itsm.incident:
+    instance:
+      host: "{{ servicenow_incident_instance_url }}"
+      username: "{{ servicenow_incident_username }}"
+      password: "{{ servicenow_incident_password }}"
+    number: "{{ servicenow_incident_number }}"
+    state: "{{ servicenow_incident_state }}"
+    close_code: "{{ servicenow_incident_close_code | default(omit) }}"
+    close_notes: "{{ servicenow_incident_close_notes | default(omit) }}"
+    other: "{{ servicenow_incident_other }}"
+  register: __servicenow_incident_update_result
+  no_log: true
+
+- name: sub | Expose updated incident as a fact
+  ansible.builtin.set_fact:
+    servicenow_incident_result: "{{ __servicenow_incident_update_result['record'] }}"
+
+- name: sub | Report updated incident state
+  ansible.builtin.debug:
+    msg: "ServiceNow incident {{ servicenow_incident_result['number'] }} updated to state: {{ servicenow_incident_result['state'] }}"
+    verbosity: 0

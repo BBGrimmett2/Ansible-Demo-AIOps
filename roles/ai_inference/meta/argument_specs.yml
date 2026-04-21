@@ -1,0 +1,66 @@
+---
+argument_specs:
+  main:
+    short_description: Call an AI model to infer an infrastructure error and recommend a remediation action.
+    description:
+      - Sends an error message and a list of available AAP job templates to an OpenAI-compatible
+        chat completions API.
+      - Returns a structured recommendation via the C(ai_inference_recommendation) fact.
+    options:
+      ai_inference_api_url:
+        type: str
+        required: false
+        default: "https://api.openai.com/v1/chat/completions"
+        description: OpenAI-compatible chat completions endpoint.
+
+      ai_inference_api_key:
+        type: str
+        required: true
+        description: API key for the AI service. Encrypt with Ansible Vault.
+
+      ai_inference_model:
+        type: str
+        required: false
+        default: "gpt-4o"
+        description: Model identifier to use for inference.
+
+      ai_inference_temperature:
+        type: float
+        required: false
+        default: 0
+        description: Sampling temperature. 0 produces deterministic output.
+
+      ai_inference_max_tokens:
+        type: int
+        required: false
+        default: 512
+        description: Maximum tokens in the AI response.
+
+      ai_inference_timeout:
+        type: int
+        required: false
+        default: 60
+        description: HTTP request timeout in seconds.
+
+      ai_inference_error_message:
+        type: str
+        required: true
+        description: The raw error or alert text to be analyzed.
+
+      ai_inference_target_host:
+        type: str
+        required: true
+        description: Hostname or IP of the affected managed node.
+
+      ai_inference_aap_job_templates:
+        type: list
+        elements: str
+        required: false
+        default: []
+        description: List of available AAP job template names the AI may recommend.
+
+      ai_inference_extra_context:
+        type: str
+        required: false
+        default: ""
+        description: Optional additional context appended to the user prompt.

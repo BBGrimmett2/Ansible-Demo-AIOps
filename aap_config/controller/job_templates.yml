@@ -1,0 +1,190 @@
+---
+controller_templates:
+
+  - name: CPU - Stress
+    description: Stress all vCPUs on a managed node to >80% utilization to trigger an alert
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/cpu_stress.yml
+    inventory: AIOps Managed Nodes
+    credentials:
+      - AIOps Machine
+    ask_limit_on_launch: true
+    extra_vars:
+      cpu_stress_load: 85
+      cpu_stress_timeout: 300
+
+  - name: CPU - Increase Allocation
+    description: Increase Proxmox VM CPU allocation by up to 10%
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/cpu_increase_allocation.yml
+    inventory: AIOps Localhost
+    credentials:
+      - AIOps Proxmox
+    ask_variables_on_launch: true
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      description: ""
+      spec:
+        - question_name: VM ID
+          question_description: Proxmox QEMU VM ID to increase CPU allocation on
+          variable: cpu_remediation_proxmox_vm_id
+          type: integer
+          required: true
+        - question_name: Proxmox Node
+          question_description: Proxmox node hosting the VM
+          variable: cpu_remediation_proxmox_node
+          type: text
+          required: false
+          default: pve
+
+  - name: CPU - Kill Top Process
+    description: Identify and kill the top CPU-consuming process on a managed node
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/cpu_kill_top_process.yml
+    inventory: AIOps Managed Nodes
+    credentials:
+      - AIOps Machine
+    ask_variables_on_launch: true
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      description: ""
+      spec:
+        - question_name: Target Host
+          question_description: Hostname or IP of the affected managed node
+          variable: target_host
+          type: text
+          required: true
+        - question_name: Kill Signal
+          question_description: Signal to send to the process
+          variable: cpu_remediation_kill_signal
+          type: multiplechoice
+          required: false
+          default: SIGTERM
+          choices: "SIGTERM\nSIGKILL"
+
+  - name: AI Remediation
+    description: Run AI inference on an error and launch the appropriate remediation job template
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/ai_remediation.yml
+    inventory: AIOps Localhost
+    credentials:
+      - AIOps AI API
+      - AIOps AAP Token
+    ask_variables_on_launch: true
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      description: ""
+      spec:
+        - question_name: Error Message
+          question_description: Raw error or alert text from the managed node
+          variable: ai_inference_error_message
+          type: textarea
+          required: true
+        - question_name: Target Host
+          question_description: Hostname or IP of the affected managed node
+          variable: ai_inference_target_host
+          type: text
+          required: true
+
+  - name: SNOW - Create Incident
+    description: Open a new ServiceNow incident
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/snow_create_incident.yml
+    inventory: AIOps Localhost
+    credentials:
+      - AIOps ServiceNow
+    ask_variables_on_launch: true
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      description: ""
+      spec:
+        - question_name: Short Description
+          question_description: One-line incident summary (populated by AI inference)
+          variable: servicenow_incident_short_description
+          type: text
+          required: true
+        - question_name: Description
+          question_description: Full incident description
+          variable: servicenow_incident_description
+          type: textarea
+          required: true
+        - question_name: Impact
+          question_description: Incident impact level
+          variable: servicenow_incident_impact
+          type: multiplechoice
+          required: false
+          default: medium
+          choices: "low\nmedium\nhigh"
+        - question_name: Urgency
+          question_description: Incident urgency level
+          variable: servicenow_incident_urgency
+          type: multiplechoice
+          required: false
+          default: medium
+          choices: "low\nmedium\nhigh"
+
+  - name: SNOW - Update Incident
+    description: Update an existing ServiceNow incident state and resolution notes
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/snow_update_incident.yml
+    inventory: AIOps Localhost
+    credentials:
+      - AIOps ServiceNow
+    ask_variables_on_launch: true
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      description: ""
+      spec:
+        - question_name: Incident Number
+          question_description: ServiceNow incident number to update (e.g. INC0010001)
+          variable: servicenow_incident_number
+          type: text
+          required: true
+        - question_name: State
+          question_description: Target incident state
+          variable: servicenow_incident_state
+          type: multiplechoice
+          required: true
+          default: resolved
+          choices: "new\nin_progress\non_hold\nresolved\nclosed\ncanceled"
+        - question_name: Close Notes
+          question_description: Resolution or escalation notes
+          variable: servicenow_incident_close_notes
+          type: textarea
+          required: false
+
+  - name: GitHub Issue
+    description: Open a GitHub issue requesting manual remediation
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/github_issue.yml
+    inventory: AIOps Localhost
+    credentials:
+      - AIOps GitHub
+    ask_variables_on_launch: true
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      description: ""
+      spec:
+        - question_name: Error Message
+          question_description: Raw error or alert text from the managed node
+          variable: ai_inference_error_message
+          type: textarea
+          required: true
+        - question_name: Target Host
+          question_description: Hostname or IP of the affected managed node
+          variable: ai_inference_target_host
+          type: text
+          required: true

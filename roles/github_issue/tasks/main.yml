@@ -1,0 +1,24 @@
+---
+- name: Open GitHub issue
+  ansible.builtin.uri:
+    url: "{{ github_issue_api_url }}/repos/{{ github_issue_repo }}/issues"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ github_issue_token }}"
+      Accept: application/vnd.github+json
+      X-GitHub-Api-Version: "2022-11-28"
+    body:
+      title: "{{ github_issue_title }}"
+      body: "{{ github_issue_body }}"
+      labels: "{{ github_issue_labels }}"
+    body_format: json
+    status_code: 201
+    timeout: "{{ github_issue_timeout }}"
+  register: __github_issue_response
+  changed_when: true
+  no_log: true
+
+- name: Report created issue URL
+  ansible.builtin.debug:
+    msg: "GitHub issue created: {{ __github_issue_response['json']['html_url'] }}"
+    verbosity: 0

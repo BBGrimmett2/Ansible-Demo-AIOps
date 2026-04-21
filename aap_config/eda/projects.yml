@@ -1,0 +1,6 @@
+---
+eda_projects:
+  - name: Ansible AIOps
+    description: AIOps rulebooks for CPU alert detection and remediation dispatch
+    url: "https://github.com/Megalith-Development/Ansible-Demo-AIOps"
+    verify_ssl: true

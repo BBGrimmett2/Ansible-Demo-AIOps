@@ -1,0 +1,9 @@
+---
+galaxy_info:
+  role_name: github_issue
+  author: briangrimmett
+  description: Opens a GitHub issue in a target repository with a given title, body, and labels.
+  license: Apache-2.0
+  min_ansible_version: "2.14"
+
+dependencies: []
