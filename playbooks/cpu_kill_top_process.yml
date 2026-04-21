@@ -1,0 +1,17 @@
+---
+- name: "CPU - Kill Top Process"
+  hosts: "{{ target_host }}"
+  gather_facts: false
+  become: true
+
+  vars:
+    # --- passed in from AAP / extra vars ---
+    # target_host: ""   # the affected managed node
+    cpu_remediation_cpu_threshold: 80
+    cpu_remediation_kill_signal: "SIGTERM"
+
+  tasks:
+    - name: Kill top CPU-consuming process on managed node
+      ansible.builtin.import_role:
+        name: cpu_remediation
+        tasks_from: kill_top_process

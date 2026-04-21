@@ -1,0 +1,37 @@
+---
+- name: Stress CPU to trigger high-utilization alert
+  hosts: all
+  become: true
+
+  vars:
+    cpu_stress_load: 85       # percent load per worker (>80 to trigger alert)
+    cpu_stress_timeout: 300   # seconds to hold the load (default: 5 min)
+
+  tasks:
+    - name: Ensure EPEL repository is present
+      ansible.builtin.dnf:
+        name: epel-release
+        state: present
+
+    - name: Ensure stress-ng is installed
+      ansible.builtin.dnf:
+        name: stress-ng
+        state: present
+
+    - name: Stress all vCPUs at {{ cpu_stress_load }}% for {{ cpu_stress_timeout }}s
+      ansible.builtin.command:
+        cmd: >-
+          stress-ng
+          --cpu {{ ansible_processor_vcpus }}
+          --cpu-load {{ cpu_stress_load }}
+          --timeout {{ cpu_stress_timeout }}s
+      async: "{{ cpu_stress_timeout + 30 }}"
+      poll: 0
+      changed_when: true
+
+    - name: Report stress job launched
+      ansible.builtin.debug:
+        msg: >-
+          Stressing {{ ansible_processor_vcpus }} vCPU(s) at {{ cpu_stress_load }}%
+          for {{ cpu_stress_timeout }}s on {{ inventory_hostname }}
+        verbosity: 0

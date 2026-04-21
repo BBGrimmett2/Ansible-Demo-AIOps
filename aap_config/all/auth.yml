@@ -1,0 +1,8 @@
+---
+# AAP connection — credentials injected via environment variables AAP_HOSTNAME,
+# AAP_USERNAME, and AAP_PASSWORD or AAP_TOKEN.
+aap_hostname: "{{ lookup('env', 'AAP_HOSTNAME') }}"
+aap_username: "{{ lookup('env', 'AAP_USERNAME') | default(omit) }}"
+aap_password: "{{ lookup('env', 'AAP_PASSWORD') | default(omit) }}"
+aap_token: "{{ lookup('env', 'AAP_TOKEN') | default(omit) }}"
+aap_validate_certs: true

@@ -1,0 +1,40 @@
+---
+- name: Infer infrastructure error and route to remediation or escalation
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    # --- passed in from EDA / extra vars ---
+    # ai_inference_error_message: ""
+    # ai_inference_target_host: ""
+    # ai_inference_api_key: "{{ vault_ai_api_key }}"
+
+    ai_inference_aap_job_templates:
+      - "CPU - Increase Allocation"
+      - "CPU - Kill Top Process"
+
+    aap_host: "{{ lookup('env', 'AAP_HOSTNAME') }}"
+    aap_token: "{{ vault_aap_token }}"
+
+  tasks:
+    - name: Infer error and get remediation recommendation
+      ansible.builtin.import_role:
+        name: ai_inference
+
+    - name: Launch AAP job template for automated remediation
+      ansible.builtin.uri:
+        url: "https://{{ aap_host }}/api/v2/job_templates/{{ ai_inference_recommendation['job_template'] | urlencode }}/launch/"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ aap_token }}"
+          Content-Type: application/json
+        body:
+          limit: "{{ ai_inference_target_host }}"
+          extra_vars:
+            error_message: "{{ ai_inference_error_message }}"
+        body_format: json
+        status_code: 201
+        timeout: 30
+      when: ai_inference_recommendation['action'] == 'remediate'
+      changed_when: true
+

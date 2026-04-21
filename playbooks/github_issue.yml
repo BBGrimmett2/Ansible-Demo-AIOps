@@ -1,0 +1,44 @@
+---
+- name: Open GitHub issue for manual remediation
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    # --- passed in from EDA / extra vars ---
+    # ai_inference_error_message: ""
+    # ai_inference_target_host: ""
+    # ai_inference_recommendation: {}   # fact set by ai_remediation workflow
+
+    github_issue_repo: "{{ lookup('env', 'GITHUB_REPO') | default('Megalith-Development/Ansible-Demo-AIOps') }}"
+    github_issue_token: "{{ vault_github_token }}"
+    github_issue_title: "[AIOps] Manual remediation required — {{ ai_inference_target_host }}"
+    github_issue_body: |
+      ## Error
+
+      ```
+      {{ ai_inference_error_message }}
+      ```
+
+      ## AI Reasoning
+
+      {{ ai_inference_recommendation['reasoning'] }}
+
+      ## Suggested New Remediation
+
+      No existing job template matched this failure. Consider adding a new Ansible role or
+      job template to address this class of error:
+
+      {{ ai_inference_recommendation['reasoning'] }}
+
+      ## Context
+
+      - **Host:** `{{ ai_inference_target_host }}`
+      - **ServiceNow Summary:** {{ ai_inference_recommendation['snow_summary'] }}
+
+      ---
+      *Opened automatically by the AIOps remediation workflow.*
+
+  tasks:
+    - name: Open GitHub issue
+      ansible.builtin.import_role:
+        name: github_issue

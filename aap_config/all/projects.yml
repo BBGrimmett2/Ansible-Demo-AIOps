@@ -1,0 +1,10 @@
+---
+controller_projects:
+  - name: Ansible AIOps
+    description: AI-driven operations automation — CPU remediation, SNOW incidents, GitHub escalation
+    organization: AIOps
+    scm_type: git
+    scm_url: "https://github.com/Megalith-Development/Ansible-Demo-AIOps"
+    scm_branch: main
+    scm_update_on_launch: true
+    scm_clean: false

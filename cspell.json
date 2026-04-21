@@ -1,0 +1,25 @@
+{
+  "version": "0.2",
+  "words": [
+    "aiops",
+    "itsm",
+    "proxmox",
+    "proxmox_kvm",
+    "vmid",
+    "qemu",
+    "ansible",
+    "playbook",
+    "rulebook",
+    "servicenow",
+    "datadog",
+    "dynatrace",
+    "lightspeed",
+    "devfile",
+    "devspaces",
+    "yamllint",
+    "markdownlint",
+    "shellcheck",
+    "briangrimmett",
+    "vault"
+  ]
+}

@@ -11,7 +11,9 @@
 		"ansible.validation.lint.arguments": "--profile production --offline",
 		"openshiftToolkit.showWelcomePage": false,
 		"editor.wordWrap": "on",
-		"files.autoSave": "off"
+		"files.autoSave": "off",
+		"ansible.ansible.path": "${workspaceFolder}/.venv/bin/ansible",
+		"ansible.python.interpreterPath": "${workspaceFolder}/.venv/bin/python"
 	},
 	// "folders": [
 	// 	{

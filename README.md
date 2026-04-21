@@ -20,6 +20,53 @@ This repo is intended to evolve into a **golden path** for consistent Ansible de
 
 ---
 
+## AIOps Workflow
+
+```mermaid
+flowchart TD
+    subgraph managed["Managed Nodes"]
+        LX["Linux Server"]
+        WIN["Windows Server"]
+        NET["Network Device"]
+    end
+
+    subgraph observability["Observability / Log Aggregation"]
+        OBS["Splunk / Datadog / Dynatrace"]
+    end
+
+    subgraph eda["Event-Driven Ansible (EDA)"]
+        RULEBOOK["Rulebook\nEvent Listener"]
+    end
+
+    subgraph aap["Ansible Automation Platform (AAP)"]
+        WF["Remediation Workflow"]
+        AI["AI Model Inference\n(Error Analysis)"]
+        JT["Job Template Inference\n(Remediation Match?)"]
+        REM["▶ Run Remediation\nJob Template"]
+    end
+
+    subgraph integrations["Integrations"]
+        SNOW["ServiceNow\nIncident Created"]
+        GH["GitHub Issue\n(Manual Intervention Required\n+ New Remediation Outline)"]
+    end
+
+    LX -->|Log / Alert| OBS
+    WIN -->|Log / Alert| OBS
+    NET -->|Log / Alert| OBS
+
+    OBS -->|Event triggers rulebook| RULEBOOK
+    RULEBOOK -->|Kick off workflow| WF
+
+    WF --> AI
+    AI -->|Creates incident| SNOW
+    AI --> JT
+
+    JT -->|Match found| REM
+    JT -->|No match / complex failure| GH
+```
+
+---
+
 ## Structure (WIP)
 
 ```
