@@ -1,5 +1,5 @@
 plugin: community.proxmox.proxmox
-url: "{{ lookup('env', 'PROXMOX_URL') }}"
+url: "{{ lookup('env', 'PROXMOX_HOST') }}"
 user: "{{ lookup('env', 'PROXMOX_USER') }}"
 token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
 token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
