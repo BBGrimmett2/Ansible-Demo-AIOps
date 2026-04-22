@@ -1,0 +1,15 @@
+---
+- name: Listen for events on a webhook from Dynatace
+  hosts: all
+  sources:
+    - name: Listen for alerts from Dynatrace
+      eda.builtin.webhook:
+        host: 0.0.0.0
+        port: 5000
+
+  rules:
+    - name: High CPU Usage Detected
+      condition: event is defined 
+      action:
+        debug:
+          msg: "High CPU usage detected in Dynatrace event stream! Event details: {{ event }}"
