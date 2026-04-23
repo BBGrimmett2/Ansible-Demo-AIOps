@@ -2,6 +2,7 @@
 - name: Stress CPU to trigger high-utilization alert
   hosts: all
   gather_facts: true
+  become: true
 
   vars:
     cpu_stress_timeout: 300   # seconds to hold the load (default: 5 min)

@@ -8,8 +8,8 @@
         port: 5000
 
   rules:
-    - name: CPU Saturation Detected
-      condition: event.payload.eventData.problemTitle == "CPU saturation"
+    - name: Hardware Problem Detected
+      condition: event.payload.eventData.problemArea == "INFRASTRUCTURE" and event.payload.eventData.problemStatus == "OPEN"
       action:
         run_workflow_template:
           name: AI Ops - CPU Remediation Workflow

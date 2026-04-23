@@ -30,7 +30,6 @@
     status_code: 200
   register: __ai_inference_api_response
   changed_when: false
-  no_log: true
 
 - name: Extract content from API response
   ansible.builtin.set_fact:

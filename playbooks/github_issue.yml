@@ -8,32 +8,67 @@
     # ai_inference_error_message: ""
     # ai_inference_target_host: ""
     # ai_inference_recommendation: {}   # fact set by ai_remediation workflow
+    # service_log_output: ""             # CPU data passed from cpu_check via set_stats
 
     github_issue_repo: "{{ lookup('env', 'GITHUB_REPO') | default('Megalith-Development/Ansible-Demo-AIOps') }}"
     github_issue_token: "{{ vault_github_token }}"
     github_issue_title: "[AIOps] Manual remediation required — {{ ai_inference_target_host }}"
     github_issue_body: |
-      ## Error
+      ## ⚠️ Why Human Escalation Was Needed
+
+      The AI-driven remediation workflow could not automatically resolve this issue because:
+
+      **{{ ai_inference_recommendation['reasoning'] }}**
+
+      The AI evaluated all available job templates and determined that none were appropriate for this specific failure scenario. Manual intervention is required to either:
+      - Create a new automation for this error type, OR
+      - Manually remediate the affected host and document the process for future automation
+
+      ---
+
+      ## Error Details
 
       ```
       {{ ai_inference_error_message }}
       ```
 
-      ## AI Reasoning
+      ## CPU Context Data
 
-      {{ ai_inference_recommendation['reasoning'] }}
+      <details>
+      <summary>Click to expand CPU snapshot from affected host</summary>
+
+      ```
+      {{ service_log_output | default('No CPU data available') }}
+      ```
+
+      </details>
+
+      ## Available Job Templates Evaluated
+
+      The AI considered these remediation options but none matched:
+
+      {% for template in ai_inference_aap_job_templates | default([]) %}
+      - {{ template }}
+      {% endfor %}
 
       ## Suggested New Remediation
 
-      No existing job template matched this failure. Consider adding a new Ansible role or
-      job template to address this class of error:
+      No existing job template matched this failure. To automate this remediation:
 
-      {{ ai_inference_recommendation['reasoning'] }}
+      1. **Create a new role** in `roles/` (e.g., `roles/cpu_remediation/tasks/your_fix.yml`)
+      2. **Create a playbook** in `playbooks/` that imports the role
+      3. **Create a job template** in `aap_config/controller/job_templates.yml`
+      4. **Add to AI context** by updating `ai_inference_aap_job_templates` in `playbooks/ai_remediation.yml`
+
+      ### ServiceNow Details
+
+      - **Summary:** {{ ai_inference_recommendation['snow_summary'] }}
+      - **Description:** {{ ai_inference_recommendation['snow_description'] }}
 
       ## Context
 
       - **Host:** `{{ ai_inference_target_host }}`
-      - **ServiceNow Summary:** {{ ai_inference_recommendation['snow_summary'] }}
+      - **Workflow:** AI Ops - CPU Remediation Workflow
 
       ---
       *Opened automatically by the AIOps remediation workflow.*

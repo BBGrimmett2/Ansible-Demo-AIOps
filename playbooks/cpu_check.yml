@@ -2,9 +2,8 @@
 - name: "CPU - Check Usage"
   hosts: "{{ target_host }}"
   gather_facts: false
-  become: true
 
-  vars:
+  # vars:
     # --- passed in from AAP / extra vars ---
     # target_host: ""              # the managed node to check
     # cpu_remediation_os: ""       # OS label, e.g. "rhel9", "Red Hat BYOL Linux", "Windows"
