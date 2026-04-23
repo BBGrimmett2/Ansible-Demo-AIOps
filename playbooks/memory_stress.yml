@@ -6,7 +6,7 @@
 
   vars:
     memory_stress_timeout: 300     # seconds to hold the load (default: 5 min)
-    memory_stress_workers: 4       # number of parallel memory workers
+    memory_stress_workers: 6       # number of parallel memory workers
     memory_stress_size_mb: 512     # size of memory to allocate per worker in MB
 
   tasks:
