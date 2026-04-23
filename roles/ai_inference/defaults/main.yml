@@ -3,7 +3,7 @@
 ai_inference_api_url: "https://api.openai.com/v1/chat/completions"
 ai_inference_model: "gpt-4o"
 ai_inference_temperature: 0
-ai_inference_max_tokens: 512
+ai_inference_max_tokens: 8192
 ai_inference_timeout: 60
 
 # Error context passed in at runtime (required — no meaningful defaults)

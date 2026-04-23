@@ -35,3 +35,11 @@
   ansible.builtin.set_fact:
     __ai_inference_raw_content: >-
       {{ __ai_inference_api_response['json']['choices'][0]['message']['content'] }}
+
+- name: Fail if AI response content is empty or null
+  ansible.builtin.fail:
+    msg: >-
+      AI API returned empty or null content. This usually means the response was truncated due to
+      max_tokens limit ({{ ai_inference_max_tokens }}). Finish reason: {{ __ai_inference_api_response['json']['choices'][0]['finish_reason'] }}.
+      Increase max_tokens or review the system prompt length.
+  when: __ai_inference_raw_content is none or __ai_inference_raw_content | length == 0
