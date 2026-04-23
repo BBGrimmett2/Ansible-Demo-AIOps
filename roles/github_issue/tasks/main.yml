@@ -16,7 +16,7 @@
     timeout: "{{ github_issue_timeout }}"
   register: __github_issue_response
   changed_when: true
-  no_log: true
+  # no_log: true
 
 - name: Report created issue URL
   ansible.builtin.debug:
