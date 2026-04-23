@@ -1,0 +1,5 @@
+---
+# Entry point is intentionally empty.
+# Call this role with tasks_from to select a path:
+#   tasks_from: create
+#   tasks_from: update

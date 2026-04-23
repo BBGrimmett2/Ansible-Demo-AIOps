@@ -1,0 +1,47 @@
+---
+- name: Stress memory to trigger infrastructure alert requiring escalation
+  hosts: all
+  gather_facts: false
+  become: true
+
+  vars:
+    memory_stress_timeout: 300     # seconds to hold the load (default: 5 min)
+    memory_stress_workers: 6       # number of parallel memory workers
+    memory_stress_size_mb: 512     # size of memory to allocate per worker in MB
+
+  tasks:
+    - name: Trigger high memory usage using Python
+      ansible.builtin.shell: |
+        python3 -c "
+        import time
+        size_mb = {{ memory_stress_size_mb }}
+        timeout = {{ memory_stress_timeout }}
+        data = bytearray(size_mb * 1024 * 1024)
+        time.sleep(timeout)
+        "
+      loop: "{{ range(0, memory_stress_workers, 1) | list }}"
+      register: memory_stress_jobs
+      changed_when: false
+      async: "{{ memory_stress_timeout }}"
+      poll: 0
+
+    - name: Report stress job launched
+      ansible.builtin.debug:
+        msg: >-
+          Stressing memory with {{ memory_stress_workers }} parallel workers
+          allocating {{ memory_stress_size_mb }}MB each for {{ memory_stress_timeout }}s
+          on {{ inventory_hostname }}.
+          This will trigger a Dynatrace infrastructure alert that requires AI escalation
+          since no memory remediation templates exist.
+
+    - name: Wait for the memory stress tasks to complete
+      ansible.builtin.async_status:
+        jid: "{{ async_result_item.ansible_job_id }}"
+      loop: "{{ memory_stress_jobs.results }}"
+      loop_control:
+        loop_var: async_result_item
+      register: memory_stress_poll_results
+      failed_when: false
+      until: memory_stress_poll_results.finished
+      retries: 30
+      delay: 10

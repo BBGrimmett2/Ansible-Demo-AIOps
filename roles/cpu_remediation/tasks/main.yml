@@ -1,0 +1,6 @@
+---
+# Entry point is intentionally empty.
+# Call this role with tasks_from to select a remediation path:
+#   tasks_from: increase_cpu
+#   tasks_from: kill_top_process
+#   tasks_from: check_cpu

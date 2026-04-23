@@ -1,0 +1,53 @@
+---
+- name: Get current VM config from Proxmox
+  community.proxmox.proxmox_vm_info:
+    api_host: "{{ cpu_remediation_proxmox_api_host }}"
+    api_user: "{{ cpu_remediation_proxmox_api_user }}"
+    api_token_id: "{{ cpu_remediation_proxmox_api_token_id }}"
+    api_token_secret: "{{ cpu_remediation_proxmox_api_token_secret }}"
+    node: "{{ cpu_remediation_proxmox_node }}"
+    vmid: "{{ cpu_remediation_proxmox_vm_id }}"
+    type: qemu
+    config: current
+  register: __cpu_remediation_vm_info
+  changed_when: false
+  no_log: true
+
+- name: Set current core facts from VM config
+  ansible.builtin.set_fact:
+    __cpu_remediation_current_cores: "{{ __cpu_remediation_vm_info['proxmox_vms'][0]['config']['cores'] | int }}"
+    __cpu_remediation_vm_name: "{{ __cpu_remediation_vm_info['proxmox_vms'][0]['name'] }}"
+
+- name: Calculate new CPU core count
+  ansible.builtin.set_fact:
+    __cpu_remediation_new_cores: >-
+      {{
+        [
+          (__cpu_remediation_current_cores | int * (1 + cpu_remediation_max_increase_pct / 100))
+          | round(0, 'ceil') | int,
+          __cpu_remediation_current_cores | int + 1
+        ] | min
+      }}
+
+- name: Report planned change
+  ansible.builtin.debug:
+    msg: >-
+      Increasing VM {{ cpu_remediation_proxmox_vm_id }} ({{ __cpu_remediation_vm_name }})
+      from {{ __cpu_remediation_current_cores }} to {{ __cpu_remediation_new_cores }} cores
+      ({{ cpu_remediation_max_increase_pct }}% max increase)
+    verbosity: 0
+
+- name: Apply new CPU core count to VM
+  community.proxmox.proxmox_kvm:
+    api_host: "{{ cpu_remediation_proxmox_api_host }}"
+    api_user: "{{ cpu_remediation_proxmox_api_user }}"
+    api_token_id: "{{ cpu_remediation_proxmox_api_token_id }}"
+    api_token_secret: "{{ cpu_remediation_proxmox_api_token_secret }}"
+    node: "{{ cpu_remediation_proxmox_node }}"
+    vmid: "{{ cpu_remediation_proxmox_vm_id }}"
+    name: "{{ __cpu_remediation_vm_name }}"
+    cores: "{{ __cpu_remediation_new_cores | int }}"
+    state: present
+    update: true
+  when: __cpu_remediation_new_cores | int != __cpu_remediation_current_cores | int
+  no_log: true

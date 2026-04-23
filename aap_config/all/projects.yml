@@ -1,0 +1,10 @@
+---
+controller_projects:
+  - name: Ansible AIOps
+    description: AI-driven operations automation — CPU remediation, SNOW incidents, GitHub escalation
+    organization: AIOps
+    scm_type: git
+    scm_url: "https://github.com/BBGrimmett2/Ansible-Demo-AIOps.git"
+    scm_branch: devel # CHANGE ME BEFORE PRODUCTION USE!
+    scm_update_on_launch: false
+    scm_clean: false

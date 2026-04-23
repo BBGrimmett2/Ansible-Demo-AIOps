@@ -1,0 +1,46 @@
+---
+- name: Find top CPU-consuming process
+  ansible.builtin.command:
+    cmd: ps -eo pid,pcpu,comm --sort=-%cpu --no-headers
+  register: __cpu_remediation_ps_output
+  changed_when: false
+
+- name: Parse top process details
+  ansible.builtin.set_fact:
+    __cpu_remediation_top_pid: "{{ __cpu_remediation_ps_output['stdout_lines'][0].split()[0] }}"
+    __cpu_remediation_top_cpu: "{{ __cpu_remediation_ps_output['stdout_lines'][0].split()[1] }}"
+    __cpu_remediation_top_name: "{{ __cpu_remediation_ps_output['stdout_lines'][0].split()[2] }}"
+
+- name: Report top process
+  ansible.builtin.debug:
+    msg: "Top process: {{ __cpu_remediation_top_name }} (PID {{ __cpu_remediation_top_pid }}) at {{ __cpu_remediation_top_cpu }}% CPU"
+    verbosity: 0
+
+- name: Abort if top process is below threshold
+  ansible.builtin.fail:
+    msg: >-
+      Top process {{ __cpu_remediation_top_name }} (PID {{ __cpu_remediation_top_pid }})
+      is at {{ __cpu_remediation_top_cpu }}% CPU, below the threshold of
+      {{ cpu_remediation_cpu_threshold }}%. Aborting kill.
+  when: __cpu_remediation_top_cpu | float < cpu_remediation_cpu_threshold | float
+
+- name: Send kill signal to top process
+  ansible.builtin.command:
+    cmd: kill -{{ cpu_remediation_kill_signal }} {{ __cpu_remediation_top_pid }}
+  changed_when: true
+  register: __cpu_remediation_kill_result
+  failed_when: __cpu_remediation_kill_result['rc'] not in [0, 1]
+
+- name: Verify process is no longer running
+  ansible.builtin.command:
+    cmd: ps -p {{ __cpu_remediation_top_pid }}
+  register: __cpu_remediation_verify
+  changed_when: false
+  failed_when: false
+
+- name: Report kill result
+  ansible.builtin.debug:
+    msg: >-
+      {{ __cpu_remediation_top_name }} (PID {{ __cpu_remediation_top_pid }})
+      {{ 'successfully terminated' if __cpu_remediation_verify['rc'] != 0 else 'still running — may require SIGKILL' }}
+    verbosity: 0

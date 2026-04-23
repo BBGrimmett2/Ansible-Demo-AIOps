@@ -1,0 +1,43 @@
+---
+argument_specs:
+  main:
+    short_description: Open a GitHub issue in a target repository.
+    options:
+      github_issue_token:
+        type: str
+        required: true
+        description: GitHub personal access token or app token. Encrypt with Ansible Vault.
+
+      github_issue_repo:
+        type: str
+        required: true
+        description: Target repository in "owner/repo" format.
+
+      github_issue_title:
+        type: str
+        required: true
+        description: Issue title.
+
+      github_issue_body:
+        type: str
+        required: true
+        description: Issue body in Markdown.
+
+      github_issue_api_url:
+        type: str
+        required: false
+        default: "https://api.github.com"
+        description: GitHub API base URL. Override for GitHub Enterprise.
+
+      github_issue_labels:
+        type: list
+        elements: str
+        required: false
+        default: ["aiops", "needs-remediation"]
+        description: Labels to apply to the issue.
+
+      github_issue_timeout:
+        type: int
+        required: false
+        default: 30
+        description: HTTP request timeout in seconds.

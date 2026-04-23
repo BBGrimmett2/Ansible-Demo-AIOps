@@ -1,0 +1,13 @@
+---
+eda_rulebook_activations:
+  - name: AIOps Dynatrace Integration
+    description: Listen for Dynatrace problem notifications via event stream and trigger remediation workflows
+    project: Ansible AIOps
+    organization: AIOps
+    rulebook: dynatrace.yml
+    decision_environment: AIOps Decision Environment
+    event_stream_name: Dynatrace Events
+    credentials:
+      - Phoenix Ansible Automation Platform
+    enabled: true
+    restart_policy: always

@@ -1,0 +1,103 @@
+---
+- name: Infer infrastructure error and route to remediation or escalation
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    # --- passed in from EDA / extra vars ---
+    # ai_inference_error_message: ""
+    # target_host: ""
+    # ai_inference_api_key: "{{ vault_ai_api_key }}"
+
+    # Map target_host to ai_inference_target_host for the AI inference role
+    ai_inference_target_host: "{{ target_host | default('localhost') }}"
+
+    # service_log_output and max_tokens are passed from previous workflow node via set_stats
+    ai_inference_extra_context: "{{ service_log_output | default('') }}"
+    ai_inference_max_tokens: "{{ max_tokens | default(8192) }}"
+
+    ai_inference_aap_job_templates:
+      - "AI Ops - CPU Increase Allocation"
+      - "AI Ops - CPU Kill Top Process"
+
+    aap_host: "{{ lookup('env', 'AAP_HOSTNAME') }}"
+    aap_token: "{{ vault_aap_token }}"
+
+  tasks:
+    - name: Infer error and get remediation recommendation
+      ansible.builtin.import_role:
+        name: ai_inference
+
+    - name: Publish AI recommendation to downstream workflow nodes
+      ansible.builtin.set_stats:
+        data:
+          ai_inference_recommendation: "{{ ai_inference_recommendation }}"
+          ai_inference_aap_job_templates: "{{ ai_inference_aap_job_templates }}"
+        per_host: false
+
+    - name: Query AAP for job template ID
+      ansible.builtin.uri:
+        url: "https://{{ aap_host }}/api/controller/v2/job_templates/?name={{ ai_inference_recommendation['job_template'] | urlencode }}"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ aap_token }}"
+        return_content: true
+        status_code: 200
+        validate_certs: false
+      register: __job_template_lookup
+      when: ai_inference_recommendation['action'] == 'remediate'
+
+    - name: Launch AAP job template for automated remediation
+      ansible.builtin.uri:
+        url: "https://{{ aap_host }}/api/controller/v2/job_templates/{{ __job_template_lookup.json.results[0].id }}/launch/"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ aap_token }}"
+          Content-Type: application/json
+        body:
+          limit: "{{ target_host.split('.')[0] }}"
+          extra_vars:
+            target_host: "{{ target_host.split('.')[0] }}"
+            error_message: "{{ ai_inference_error_message }}"
+        body_format: json
+        status_code: 201
+        timeout: 30
+        validate_certs: false
+      register: __job_launch
+      when: ai_inference_recommendation['action'] == 'remediate'
+      changed_when: true
+
+    - name: Wait for remediation job to complete
+      ansible.builtin.uri:
+        url: "https://{{ aap_host }}/api/controller/v2/jobs/{{ __job_launch.json.id }}/"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ aap_token }}"
+        return_content: true
+        status_code: 200
+        validate_certs: false
+      register: __job_status
+      until: __job_status.json.status not in ['pending', 'waiting', 'running']
+      retries: 60
+      delay: 5
+      when: ai_inference_recommendation['action'] == 'remediate'
+
+    - name: Report remediation job result
+      ansible.builtin.debug:
+        msg: "Remediation job {{ __job_launch.json.id }} completed with status: {{ __job_status.json.status }}"
+      when: ai_inference_recommendation['action'] == 'remediate'
+
+    - name: Fail if remediation job did not succeed
+      ansible.builtin.fail:
+        msg: "Remediation job {{ __job_launch.json.id }} failed with status: {{ __job_status.json.status }}"
+      when:
+        - ai_inference_recommendation['action'] == 'remediate'
+        - __job_status.json.status != 'successful'
+
+    - name: Fail to trigger escalation path when AI cannot identify a remediation
+      ansible.builtin.fail:
+        msg: >-
+          AI determined no available job template can remediate this error.
+          Reasoning: {{ ai_inference_recommendation['reasoning'] }}
+      when: ai_inference_recommendation['action'] == 'escalate'
+

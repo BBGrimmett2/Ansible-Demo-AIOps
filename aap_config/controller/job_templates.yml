@@ -1,0 +1,254 @@
+---
+controller_templates:
+
+  - name: AI Ops - CPU Stress
+    description: >-
+      Stress all vCPUs on a target managed node to sustained >80% utilization.
+      Used to simulate a CPU alert and trigger the full AIOps remediation workflow via EDA.
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/cpu_stress.yml
+    inventory: AIOps Managed Nodes
+    credentials:
+      - AIOps Machine
+    ask_limit_on_launch: true
+    labels:
+      - aiops
+    extra_vars:
+      cpu_stress_load: 85
+      cpu_stress_timeout: 300
+
+  - name: AI Ops - Memory Stress
+    description: >-
+      Stress memory allocation on a target managed node to trigger infrastructure alerts.
+      Used to simulate a non-CPU hardware issue that will cause AI escalation
+      since no memory remediation templates exist.
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/memory_stress.yml
+    inventory: AIOps Managed Nodes
+    credentials:
+      - AIOps Machine
+    ask_limit_on_launch: true
+    labels:
+      - aiops
+    extra_vars:
+      memory_stress_timeout: 300
+      memory_stress_workers: 4
+      memory_stress_size_mb: 512
+
+  - name: AI Ops - CPU Increase Allocation
+    description: >-
+      Increase the CPU core count on a Proxmox VM by up to 10% of its current allocation.
+      Automated remediation path for sustained high CPU utilization caused by resource starvation.
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/cpu_increase_allocation.yml
+    inventory: AIOps Localhost
+    credentials:
+      - AIOps Proxmox
+    ask_variables_on_launch: true
+    labels:
+      - aiops
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      description: ""
+      spec:
+        - question_name: VM ID
+          question_description: Proxmox QEMU VM ID to increase CPU allocation on
+          variable: cpu_remediation_proxmox_vm_id
+          type: integer
+          required: true
+        - question_name: Proxmox Node
+          question_description: Proxmox node hosting the VM
+          variable: cpu_remediation_proxmox_node
+          type: text
+          required: false
+          default: pve
+
+  - name: AI Ops - CPU Kill Top Process
+    description: >-
+      Identify the top CPU-consuming process on a managed node and terminate it.
+      Automated remediation path for high CPU caused by a runaway or misbehaving process.
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/cpu_kill_top_process.yml
+    inventory: AIOps Managed Nodes
+    credentials:
+      - AIOps Machine
+    ask_variables_on_launch: true
+    labels:
+      - aiops
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      description: ""
+      spec:
+        - question_name: Target Host
+          question_description: Hostname or IP of the affected managed node
+          variable: target_host
+          type: text
+          required: true
+        - question_name: Kill Signal
+          question_description: Signal to send to the process
+          variable: cpu_remediation_kill_signal
+          type: multiplechoice
+          required: false
+          default: SIGTERM
+          choices: "SIGTERM\nSIGKILL"
+
+  - name: AI Ops - CPU Check
+    description: >-
+      Collect CPU usage snapshot from the target host and pass it to the next workflow node
+      via set_stats. Provides detailed CPU context for AI inference.
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/cpu_check.yml
+    inventory: AIOps Managed Nodes
+    credentials:
+      - AIOps Machine
+    ask_variables_on_launch: true
+    labels:
+      - aiops
+
+  - name: AI Ops - AI Remediation
+    description: >-
+      Send the error context to an AI model for inference. The AI analyzes the error,
+      matches it against available job templates, and launches the best remediation automatically.
+      Falls through to escalation if no confident match is found.
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/ai_remediation.yml
+    inventory: AIOps Localhost
+    credentials:
+      - AIOps AI API
+      - AIOps AAP Token
+    ask_variables_on_launch: true
+    labels:
+      - aiops
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      description: ""
+      spec:
+        - question_name: Error Message
+          question_description: Raw error or alert text from the managed node
+          variable: ai_inference_error_message
+          type: textarea
+          required: true
+        - question_name: Target Host
+          question_description: Hostname or IP of the affected managed node
+          variable: target_host
+          type: text
+          required: true
+
+  - name: AI Ops - SNOW Create Incident
+    description: >-
+      Open a new ServiceNow incident. Short description and full description are populated
+      by the AI inference recommendation. Publishes the incident number for downstream workflow nodes.
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/snow_create_incident.yml
+    inventory: AIOps Localhost
+    credentials:
+      - AIOps ServiceNow
+    ask_variables_on_launch: true
+    labels:
+      - aiops
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      description: ""
+      spec:
+        - question_name: Short Description
+          question_description: One-line incident summary (populated by AI inference)
+          variable: servicenow_incident_short_description
+          type: text
+          required: true
+        - question_name: Description
+          question_description: Full incident description
+          variable: servicenow_incident_description
+          type: textarea
+          required: true
+        - question_name: Impact
+          question_description: Incident impact level
+          variable: servicenow_incident_impact
+          type: multiplechoice
+          required: false
+          default: medium
+          choices: "low\nmedium\nhigh"
+        - question_name: Urgency
+          question_description: Incident urgency level
+          variable: servicenow_incident_urgency
+          type: multiplechoice
+          required: false
+          default: medium
+          choices: "low\nmedium\nhigh"
+
+  - name: AI Ops - SNOW Update Incident
+    description: >-
+      Update the state and resolution notes of an existing ServiceNow incident.
+      Used by the workflow to mark incidents resolved after successful remediation,
+      or in_progress when escalated for manual intervention.
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/snow_update_incident.yml
+    inventory: AIOps Localhost
+    credentials:
+      - AIOps ServiceNow
+    ask_variables_on_launch: true
+    labels:
+      - aiops
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      description: ""
+      spec:
+        - question_name: Incident Number
+          question_description: ServiceNow incident number to update (e.g. INC0010001)
+          variable: servicenow_incident_number
+          type: text
+          required: true
+        - question_name: State
+          question_description: Target incident state
+          variable: servicenow_incident_state
+          type: multiplechoice
+          required: true
+          default: resolved
+          choices: "new\nin_progress\non_hold\nresolved\nclosed\ncanceled"
+        - question_name: Close Notes
+          question_description: Resolution or escalation notes
+          variable: servicenow_incident_close_notes
+          type: textarea
+          required: false
+
+  - name: AI Ops - GitHub Issue
+    description: >-
+      Open a GitHub issue in the AIOps repository requesting manual remediation.
+      Includes the AI reasoning, affected host, ServiceNow incident reference,
+      and a suggested outline for a new automated remediation to be added to the project.
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/github_issue.yml
+    inventory: AIOps Localhost
+    credentials:
+      - AIOps GitHub
+    ask_variables_on_launch: true
+    labels:
+      - aiops
+    survey_enabled: true
+    survey_spec:
+      name: ""
+      description: ""
+      spec:
+        - question_name: Error Message
+          question_description: Raw error or alert text from the managed node
+          variable: ai_inference_error_message
+          type: textarea
+          required: true
+        - question_name: Target Host
+          question_description: Hostname or IP of the affected managed node
+          variable: target_host
+          type: text
+          required: true

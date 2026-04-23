@@ -1,0 +1,27 @@
+---
+- name: "SNOW - Create Incident"
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    servicenow_incident_instance_url: "{{ vault_snow_instance_url }}"
+    servicenow_incident_username: "{{ vault_snow_username }}"
+    servicenow_incident_password: "{{ vault_snow_password }}"
+
+    # --- passed in from EDA / ai_remediation workflow ---
+    # servicenow_incident_short_description: "{{ ai_inference_recommendation['snow_summary'] }}"
+    # servicenow_incident_description: "{{ ai_inference_recommendation['snow_description'] }}"
+    # servicenow_incident_impact: "high"
+    # servicenow_incident_urgency: "high"
+
+  tasks:
+    - name: Create ServiceNow incident
+      ansible.builtin.import_role:
+        name: servicenow_incident
+        tasks_from: create
+
+    - name: Publish incident number to workflow
+      ansible.builtin.set_stats:
+        data:
+          servicenow_incident_number: "{{ servicenow_incident_result['number'] }}"
+        per_host: false

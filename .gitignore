@@ -1,0 +1,9 @@
+# Python venv
+.venv/
+
+# Vault password file — never commit
+.vault_pass
+
+# Plaintext vault — encrypt before committing (ansible-vault encrypt vault.yml)
+# Remove this line once vault.yml is encrypted
+vault.yml

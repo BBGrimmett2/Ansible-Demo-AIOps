@@ -1,6 +1,8 @@
 ---
-# Example Collections Requirements
-# Usage:
-#  - name: <collection name>
-#    version: 1.0.0
-collections: []
+collections:
+  - name: community.proxmox
+  - name: servicenow.itsm
+  - name: ansible.platform
+  - name: ansible.controller
+  - name: ansible.eda
+  - name: infra.aap_configuration

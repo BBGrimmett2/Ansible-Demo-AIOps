@@ -1,0 +1,35 @@
+---
+- name: Stress CPU to trigger high-utilization alert
+  hosts: all
+  gather_facts: true
+  become: true
+
+  vars:
+    cpu_stress_timeout: 300   # seconds to hold the load (default: 5 min)
+
+  tasks:
+    - name: Trigger high CPU using a loop for total number of vcpus
+      ansible.builtin.shell: yes > /dev/null
+      loop: "{{ range(0, ansible_facts['processor_vcpus'], 1) | list }}"
+      register: async_results
+      changed_when: false
+      async: "{{ cpu_stress_timeout }}"
+      poll: 0
+
+    - name: Report stress job launched
+      ansible.builtin.debug:
+        msg: >-
+          Stressing {{ ansible_processor_vcpus }} vCPU(s) at 100%
+          for {{ cpu_stress_timeout }}s on {{ inventory_hostname }}
+
+    - name: Wait for the CPU stress tasks to complete
+      ansible.builtin.async_status:
+        jid: "{{ async_result_item.ansible_job_id }}"
+      loop: "{{ async_results.results }}"
+      loop_control:
+        loop_var: async_result_item
+      register: async_poll_results
+      failed_when: false
+      until: async_poll_results.finished
+      retries: 30
+      delay: 10

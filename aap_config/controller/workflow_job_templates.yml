@@ -1,0 +1,99 @@
+---
+# Incident number is passed between workflow nodes via set_stats in snow_create_incident.yml.
+# Ensure that playbook publishes: set_stats(data={servicenow_incident_number: ...}, per_host=false)
+controller_workflows:
+
+  - name: AI Ops - CPU Remediation Workflow
+    description: >-
+      End-to-end AI-driven CPU remediation: open SNOW incident → AI inference →
+      automated remediation or escalation → close/update SNOW incident.
+      Remediation succeeds when the AI matches a known job template and launches it.
+      Escalation (GitHub issue + SNOW update) is triggered when the AI recommends
+      an unrecognised job template or determines no template can address the error.
+    organization: AIOps
+    ask_variables_on_launch: true
+    labels:
+      - aiops
+    survey_enabled: true
+    survey_spec:
+      name: ''
+      description: ''
+      spec:
+        - question_name: Error Message
+          question_description: Raw error or alert text from the managed node
+          required: true
+          type: textarea
+          variable: ai_inference_error_message
+          min: 0
+          max: 1024
+          default: ''
+
+        - question_name: Target Host
+          question_description: Hostname or IP of the affected managed node
+          required: true
+          type: text
+          variable: target_host
+          min: 0
+          max: 1024
+          default: ''
+
+        - question_name: Impact
+          question_description: Incident impact level
+          required: false
+          type: multiplechoice
+          variable: servicenow_incident_impact
+          choices:
+            - low
+            - medium
+            - high
+          default: medium
+
+        - question_name: Urgency
+          question_description: Incident urgency level
+          required: false
+          type: multiplechoice
+          variable: servicenow_incident_urgency
+          choices:
+            - low
+            - medium
+            - high
+          default: medium
+
+    simplified_workflow_nodes:
+      - identifier: create-snow-incident
+        unified_job_template: AI Ops - SNOW Create Incident
+        success_nodes:
+          - cpu-check
+
+      - identifier: cpu-check
+        unified_job_template: AI Ops - CPU Check
+        success_nodes:
+          - ai-remediation
+
+      - identifier: ai-remediation
+        unified_job_template: AI Ops - AI Remediation
+        success_nodes:
+          - snow-update-resolved
+        failure_nodes:
+          - github-issue
+
+      - identifier: snow-update-resolved
+        unified_job_template: AI Ops - SNOW Update Incident
+        extra_data:
+          servicenow_incident_state: resolved
+          servicenow_incident_close_code: "Solved (Permanently)"
+          servicenow_incident_close_notes: "Automated CPU remediation completed successfully."
+
+      - identifier: github-issue
+        unified_job_template: AI Ops - GitHub Issue
+        success_nodes:
+          - snow-update-escalated
+
+      - identifier: snow-update-escalated
+        unified_job_template: AI Ops - SNOW Update Incident
+        extra_data:
+          servicenow_incident_state: in_progress
+          servicenow_incident_close_notes: >-
+            Automated remediation could not proceed — either no known job template
+            matched the error or the AI determined escalation was required.
+            Manual intervention required. GitHub issue opened.

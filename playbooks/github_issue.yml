@@ -1,0 +1,82 @@
+---
+- name: Open GitHub issue for manual remediation
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    # --- passed in from EDA / extra vars ---
+    # ai_inference_error_message: ""
+    # target_host: ""
+    # ai_inference_recommendation: {}   # fact set by ai_remediation workflow
+    # service_log_output: ""             # CPU data passed from cpu_check via set_stats
+    # ai_inference_aap_job_templates: [] # list of templates from ai_remediation
+
+    github_issue_repo: "{{ lookup('env', 'GITHUB_REPO') | default('Megalith-Development/Ansible-Demo-AIOps') }}"
+    github_issue_token: "{{ vault_github_token }}"
+    github_issue_title: "[AIOps] Manual remediation required — {{ target_host | default('Unknown Host') }}"
+    github_issue_body: |
+      ## ⚠️ Why Human Escalation Was Needed
+
+      The AI-driven remediation workflow could not automatically resolve this issue because:
+
+      **{{ ai_inference_recommendation.reasoning | default('AI inference failed or was unable to provide a recommendation.') }}**
+
+      The AI evaluated all available job templates and determined that none were appropriate for this specific failure scenario. Manual intervention is required to either:
+      - Create a new automation for this error type, OR
+      - Manually remediate the affected host and document the process for future automation
+
+      ---
+
+      ## Error Details
+
+      ```
+      {{ ai_inference_error_message | default('No error message available') }}
+      ```
+
+      ## CPU Context Data
+
+      <details>
+      <summary>Click to expand CPU snapshot from affected host</summary>
+
+      ```
+      {{ service_log_output | default('No CPU data available') }}
+      ```
+
+      </details>
+
+      ## Available Job Templates Evaluated
+
+      The AI considered these remediation options but none matched:
+
+      {% for template in ai_inference_aap_job_templates | default([]) %}
+      - {{ template }}
+      {% else %}
+      - No job templates were available for evaluation
+      {% endfor %}
+
+      ## Suggested New Remediation
+
+      No existing job template matched this failure. To automate this remediation:
+
+      1. **Create a new role** in `roles/` (e.g., `roles/cpu_remediation/tasks/your_fix.yml`)
+      2. **Create a playbook** in `playbooks/` that imports the role
+      3. **Create a job template** in `aap_config/controller/job_templates.yml`
+      4. **Add to AI context** by updating `ai_inference_aap_job_templates` in `playbooks/ai_remediation.yml`
+
+      ### ServiceNow Details
+
+      - **Summary:** {{ ai_inference_recommendation.snow_summary | default('N/A') }}
+      - **Description:** {{ ai_inference_recommendation.snow_description | default('N/A') }}
+
+      ## Context
+
+      - **Host:** `{{ target_host | default('Unknown') }}`
+      - **Workflow:** AI Ops - CPU Remediation Workflow
+
+      ---
+      *Opened automatically by the AIOps remediation workflow.*
+
+  tasks:
+    - name: Open GitHub issue
+      ansible.builtin.import_role:
+        name: github_issue

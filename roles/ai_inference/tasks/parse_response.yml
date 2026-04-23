@@ -1,0 +1,32 @@
+---
+- name: Parse JSON from AI response content
+  ansible.builtin.set_fact:
+    ai_inference_recommendation: "{{ __ai_inference_raw_content | from_json }}"
+
+- name: Validate required fields are present
+  ansible.builtin.assert:
+    that:
+      - ai_inference_recommendation['action'] in ['remediate', 'escalate']
+      - ai_inference_recommendation['snow_summary'] is defined
+      - ai_inference_recommendation['snow_description'] is defined
+      - ai_inference_recommendation['reasoning'] is defined
+    fail_msg: "AI response is missing required fields or returned an invalid action."
+    success_msg: "AI recommendation parsed successfully — action: {{ ai_inference_recommendation['action'] }}"
+
+- name: Fail when recommended job template is not in the available list
+  ansible.builtin.fail:
+    msg: >-
+      AI recommended job template '{{ ai_inference_recommendation['job_template'] }}'
+      does not match any available template. Available: {{ ai_inference_aap_job_templates | join(', ') }}.
+      Manual intervention required.
+  when:
+    - ai_inference_recommendation['action'] == 'remediate'
+    - ai_inference_recommendation['job_template'] not in ai_inference_aap_job_templates
+
+- name: Log recommendation
+  ansible.builtin.debug:
+    msg:
+      action: "{{ ai_inference_recommendation['action'] }}"
+      job_template: "{{ ai_inference_recommendation['job_template'] | default('none') }}"
+      reasoning: "{{ ai_inference_recommendation['reasoning'] }}"
+    verbosity: 1

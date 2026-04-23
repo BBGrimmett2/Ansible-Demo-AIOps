@@ -1,0 +1,9 @@
+---
+galaxy_info:
+  role_name: servicenow_incident
+  author: briangrimmett
+  description: Create and update ServiceNow incidents via the servicenow.itsm collection.
+  license: Apache-2.0
+  min_ansible_version: "2.14"
+
+dependencies: []

@@ -1,0 +1,19 @@
+---
+- name: "CPU - Increase Allocation"
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    # --- passed in from AAP / extra vars ---
+    # cpu_remediation_proxmox_vm_id: ""
+    # cpu_remediation_proxmox_api_user: ""               # e.g. "ansible@pve"
+    # cpu_remediation_proxmox_api_token_id: ""           # e.g. "automation"
+    # cpu_remediation_proxmox_api_token_secret: "{{ vault_proxmox_token_secret }}"
+    cpu_remediation_proxmox_api_host: "{{ lookup('env', 'PROXMOX_HOST') | default('proxmox.example.com') }}"
+    cpu_remediation_proxmox_node: "{{ lookup('env', 'PROXMOX_NODE') | default('pve') }}"
+
+  tasks:
+    - name: Increase VM CPU allocation on Proxmox
+      ansible.builtin.import_role:
+        name: cpu_remediation
+        tasks_from: increase_cpu

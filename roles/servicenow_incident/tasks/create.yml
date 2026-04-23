@@ -1,0 +1,25 @@
+---
+- name: Create ServiceNow incident
+  servicenow.itsm.incident:
+    instance:
+      host: "{{ servicenow_incident_instance_url }}"
+      username: "{{ servicenow_incident_username }}"
+      password: "{{ servicenow_incident_password }}"
+    state: "{{ servicenow_incident_state }}"
+    caller: "{{ servicenow_incident_caller }}"
+    short_description: "{{ servicenow_incident_short_description }}"
+    description: "{{ servicenow_incident_description }}"
+    impact: "{{ servicenow_incident_impact }}"
+    urgency: "{{ servicenow_incident_urgency }}"
+    other: "{{ servicenow_incident_other }}"
+  register: __servicenow_incident_create_result
+  # no_log: true
+
+- name: Expose created incident as a fact
+  ansible.builtin.set_fact:
+    servicenow_incident_result: "{{ __servicenow_incident_create_result['record'] }}"
+
+- name: Report created incident number
+  ansible.builtin.debug:
+    msg: "ServiceNow incident created: {{ servicenow_incident_result['number'] }}"
+    verbosity: 0

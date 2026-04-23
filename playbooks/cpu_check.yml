@@ -1,0 +1,15 @@
+---
+- name: "CPU - Check Usage"
+  hosts: "{{ target_host | default('all') }}"
+  gather_facts: false
+
+  # vars:
+    # --- passed in from AAP / extra vars ---
+    # target_host: ""              # the managed node to check (optional, defaults to 'all')
+    # cpu_remediation_os: ""       # OS label, e.g. "rhel9", "Red Hat BYOL Linux", "Windows"
+
+  tasks:
+    - name: Collect CPU snapshot and forward to AI inference
+      ansible.builtin.import_role:
+        name: cpu_remediation
+        tasks_from: check_cpu

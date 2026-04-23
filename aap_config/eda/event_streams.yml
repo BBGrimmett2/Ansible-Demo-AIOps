@@ -1,0 +1,7 @@
+---
+eda_event_streams:
+  - name: Dynatrace Events
+    description: Event stream for Dynatrace problem notifications and alerts
+    organization: AIOps
+    credential_name: Dynatrace Token
+    forward_events: true

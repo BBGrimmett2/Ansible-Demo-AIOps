@@ -1,0 +1,30 @@
+---
+controller_inventories:
+
+  - name: AIOps Managed Nodes
+    description: RHEL hosts targeted by CPU stress and kill-process remediations
+    organization: AIOps
+
+  - name: AIOps Localhost
+    description: Localhost inventory for API-based playbooks (AI inference, SNOW, GitHub)
+    organization: AIOps
+    variables:
+      ansible_connection: local
+      
+controller_inventory_sources:
+  - name: Proxmox VMs
+    description: Dynamic inventory from Proxmox VE via community.proxmox plugin
+    inventory: AIOps Managed Nodes
+    source: scm
+    source_project: Ansible AIOps
+    source_path: inventories/pve.proxmox.yml
+    credential: AIOps Proxmox
+    update_on_launch: false
+    overwrite: true
+    overwrite_vars: true
+
+controller_hosts:
+  - name: localhost
+    inventory: AIOps Localhost
+    variables:
+      ansible_connection: local

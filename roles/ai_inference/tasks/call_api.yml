@@ -1,0 +1,45 @@
+---
+- name: Build request payload
+  ansible.builtin.set_fact:
+    __ai_inference_payload:
+      model: "{{ ai_inference_model }}"
+      temperature: "{{ ai_inference_temperature }}"
+      max_tokens: "{{ ai_inference_max_tokens }}"
+      messages:
+        - role: system
+          content: "{{ __ai_inference_system_prompt }}"
+        - role: user
+          content: >-
+            Error message: {{ ai_inference_error_message }}
+            Host: {{ ai_inference_target_host }}
+            {% if ai_inference_extra_context | length > 0 %}
+            Additional context: {{ ai_inference_extra_context }}
+            {% endif %}
+
+- name: Send inference request to AI API
+  ansible.builtin.uri:
+    url: "{{ ai_inference_api_url }}"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ ai_inference_api_key }}"
+      Content-Type: application/json
+    body: "{{ __ai_inference_payload | to_json }}"
+    body_format: json
+    return_content: true
+    timeout: "{{ ai_inference_timeout }}"
+    status_code: 200
+  register: __ai_inference_api_response
+  changed_when: false
+
+- name: Extract content from API response
+  ansible.builtin.set_fact:
+    __ai_inference_raw_content: >-
+      {{ __ai_inference_api_response['json']['choices'][0]['message']['content'] }}
+
+- name: Fail if AI response content is empty or null
+  ansible.builtin.fail:
+    msg: >-
+      AI API returned empty or null content. This usually means the response was truncated due to
+      max_tokens limit ({{ ai_inference_max_tokens }}). Finish reason: {{ __ai_inference_api_response['json']['choices'][0]['finish_reason'] }}.
+      Increase max_tokens or review the system prompt length.
+  when: __ai_inference_raw_content is none or __ai_inference_raw_content | length == 0

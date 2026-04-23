@@ -1,0 +1,24 @@
+---
+- name: Listen for events on a webhook from Dynatrace
+  hosts: all
+  sources:
+    - name: Listen for alerts from Dynatrace
+      ansible.eda.webhook:
+        host: 0.0.0.0
+        port: 5000
+
+  rules:
+    - name: Hardware Problem Detected
+      condition: event.payload.eventData.problemArea == "INFRASTRUCTURE" and event.payload.eventData.problemStatus == "OPEN"
+      action:
+        run_workflow_template:
+          name: AI Ops - CPU Remediation Workflow
+          organization: AIOps
+          job_args:
+            extra_vars:
+              ai_inference_error_message: "Dynatrace Problem: {{ event.payload.eventData.problemTitle }} ({{ event.payload.eventData.problemLevel }}) - Problem ID: {{ event.payload.eventData.problemId }}"
+              target_host: "{{ event.payload.eventData.impactedEntitiesId[0].name }}"
+              servicenow_incident_impact: medium
+              servicenow_incident_urgency: medium
+              servicenow_incident_short_description: "{{ event.payload.eventData.problemTitle }} on {{ event.payload.eventData.impactedEntitiesId[0].name }}"
+              servicenow_incident_description: "Dynatrace detected {{ event.payload.eventData.problemTitle }} ({{ event.payload.eventData.problemLevel }}) on host {{ event.payload.eventData.impactedEntitiesId[0].name }}. Problem ID: {{ event.payload.eventData.problemId }}. Entity ID: {{ event.payload.eventData.impactedEntitiesId[0].entityId.id }}."

@@ -1,0 +1,57 @@
+---
+argument_specs:
+  increase_cpu:
+    short_description: Increase Proxmox VM CPU allocation by up to the configured max percentage.
+    options:
+      cpu_remediation_proxmox_api_host:
+        type: str
+        required: false
+        default: "proxmox.example.com"
+        description: Hostname or IP of the Proxmox API.
+
+      cpu_remediation_proxmox_node:
+        type: str
+        required: false
+        default: "pve"
+        description: Proxmox node name hosting the VM.
+
+      cpu_remediation_proxmox_vm_id:
+        type: int
+        required: true
+        description: QEMU VM ID to modify.
+
+      cpu_remediation_proxmox_api_user:
+        type: str
+        required: true
+        description: "Proxmox API user. Format: USER@REALM (e.g. ansible@pve)."
+
+      cpu_remediation_proxmox_api_token_id:
+        type: str
+        required: true
+        description: Proxmox API token name (the label part of the token, e.g. "automation").
+
+      cpu_remediation_proxmox_api_token_secret:
+        type: str
+        required: true
+        description: Proxmox API token UUID. Encrypt with Ansible Vault.
+
+      cpu_remediation_max_increase_pct:
+        type: int
+        required: false
+        default: 10
+        description: Maximum percentage above current cores that may be allocated in a single remediation.
+
+  kill_top_process:
+    short_description: Identify and kill the top CPU-consuming process on the managed node.
+    options:
+      cpu_remediation_kill_signal:
+        type: str
+        required: false
+        default: "SIGTERM"
+        description: Signal sent to the process (e.g. SIGTERM, SIGKILL).
+
+      cpu_remediation_cpu_threshold:
+        type: int
+        required: false
+        default: 80
+        description: Minimum CPU percentage a process must be consuming before it is killed.

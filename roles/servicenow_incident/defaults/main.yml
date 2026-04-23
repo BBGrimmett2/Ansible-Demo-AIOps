@@ -1,0 +1,28 @@
+---
+# --- ServiceNow connection ---
+servicenow_incident_instance_url: "https://instance.service-now.com"
+
+# Required at runtime — vault-encrypt credentials:
+# servicenow_incident_username: ""
+# servicenow_incident_password: ""
+
+# --- Incident fields (create path) ---
+servicenow_incident_caller: "ansible"
+servicenow_incident_impact: "medium"      # low | medium | high
+servicenow_incident_urgency: "medium"     # low | medium | high
+servicenow_incident_state: "new"          # new | in_progress | on_hold | resolved | closed | canceled
+
+# Required at runtime for create path:
+# servicenow_incident_short_description: ""
+# servicenow_incident_description: ""
+
+# Optional for create path:
+servicenow_incident_other: {}             # any additional ServiceNow fields as key/value pairs
+
+# --- Update path ---
+# Required at runtime for update path:
+# servicenow_incident_number: ""          # e.g. "INC0010001"
+
+# Optional for update/resolve path:
+servicenow_incident_close_code: "Solved (Permanently)"
+servicenow_incident_close_notes: ""
