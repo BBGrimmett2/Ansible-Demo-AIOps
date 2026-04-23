@@ -1,5 +1,5 @@
 ---
-- name: Listen for events on a webhook from Dynatace
+- name: Listen for events on a webhook from Dynatrace
   hosts: all
   sources:
     - name: Listen for alerts from Dynatrace
@@ -8,8 +8,15 @@
         port: 5000
 
   rules:
-    - name: High CPU Usage Detected
-      condition: event.payload is defined
+    - name: CPU Saturation Detected
+      condition: event.payload.eventData.problemTitle == "CPU saturation"
       action:
-        debug:
-          msg: "High CPU usage detected in Dynatrace event stream! Event details: {{ event }}"
+        run_workflow_template:
+          name: AI Ops - CPU Remediation Workflow
+          organization: AIOps
+          job_args:
+            extra_vars:
+              ai_inference_error_message: "Dynatrace Problem: {{ event.payload.eventData.problemTitle }} ({{ event.payload.eventData.problemLevel }}) - Problem ID: {{ event.payload.eventData.problemId }}"
+              ai_inference_target_host: "{{ event.payload.eventData.impactedEntitiesId[0].name }}"
+              servicenow_incident_impact: medium
+              servicenow_incident_urgency: medium
