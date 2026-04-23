@@ -55,9 +55,9 @@
           Authorization: "Bearer {{ aap_token }}"
           Content-Type: application/json
         body:
-          limit: "{{ target_host }}"
+          limit: "{{ target_host.split('.')[0] }}"
           extra_vars:
-            target_host: "{{ target_host }}"
+            target_host: "{{ target_host.split('.')[0] }}"
             error_message: "{{ ai_inference_error_message }}"
         body_format: json
         status_code: 201

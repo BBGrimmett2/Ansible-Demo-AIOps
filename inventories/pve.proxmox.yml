@@ -8,4 +8,3 @@ want_facts: true
 want_proxmox_nodes_ansible_host: true
 compose:
   ansible_host: inventory_hostname + '.local.starbase.icu'
-  inventory_hostname: inventory_hostname + '.local.starbase.icu'
