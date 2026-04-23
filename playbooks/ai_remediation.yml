@@ -63,8 +63,36 @@
         status_code: 201
         timeout: 30
         validate_certs: false
+      register: __job_launch
       when: ai_inference_recommendation['action'] == 'remediate'
       changed_when: true
+
+    - name: Wait for remediation job to complete
+      ansible.builtin.uri:
+        url: "https://{{ aap_host }}/api/controller/v2/jobs/{{ __job_launch.json.id }}/"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ aap_token }}"
+        return_content: true
+        status_code: 200
+        validate_certs: false
+      register: __job_status
+      until: __job_status.json.status not in ['pending', 'waiting', 'running']
+      retries: 60
+      delay: 5
+      when: ai_inference_recommendation['action'] == 'remediate'
+
+    - name: Report remediation job result
+      ansible.builtin.debug:
+        msg: "Remediation job {{ __job_launch.json.id }} completed with status: {{ __job_status.json.status }}"
+      when: ai_inference_recommendation['action'] == 'remediate'
+
+    - name: Fail if remediation job did not succeed
+      ansible.builtin.fail:
+        msg: "Remediation job {{ __job_launch.json.id }} failed with status: {{ __job_status.json.status }}"
+      when:
+        - ai_inference_recommendation['action'] == 'remediate'
+        - __job_status.json.status != 'successful'
 
     - name: Fail to trigger escalation path when AI cannot identify a remediation
       ansible.builtin.fail:

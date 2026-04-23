@@ -17,7 +17,11 @@
     verbosity: 0
 
 - name: Abort if top process is below threshold
-  ansible.builtin.meta: end_host
+  ansible.builtin.fail:
+    msg: >-
+      Top process {{ __cpu_remediation_top_name }} (PID {{ __cpu_remediation_top_pid }})
+      is at {{ __cpu_remediation_top_cpu }}% CPU, below the threshold of
+      {{ cpu_remediation_cpu_threshold }}%. Aborting kill.
   when: __cpu_remediation_top_cpu | float < cpu_remediation_cpu_threshold | float
 
 - name: Send kill signal to top process
