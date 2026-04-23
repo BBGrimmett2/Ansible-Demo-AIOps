@@ -14,7 +14,7 @@
 
     # service_log_output and max_tokens are passed from previous workflow node via set_stats
     ai_inference_extra_context: "{{ service_log_output | default('') }}"
-    ai_inference_max_tokens: "{{ max_tokens | default(512) }}"
+    ai_inference_max_tokens: "{{ max_tokens | default(8192) }}"
 
     ai_inference_aap_job_templates:
       - "AI Ops - CPU Increase Allocation"
