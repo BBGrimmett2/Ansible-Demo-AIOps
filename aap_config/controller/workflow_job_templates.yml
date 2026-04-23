@@ -14,7 +14,50 @@ controller_workflows:
     ask_variables_on_launch: true
     labels:
       - aiops
-    survey_enabled: false
+    survey_enabled: true
+    survey_spec:
+      name: ''
+      description: ''
+      spec:
+        - question_name: Error Message
+          question_description: Raw error or alert text from the managed node
+          required: true
+          type: textarea
+          variable: ai_inference_error_message
+          min: 0
+          max: 1024
+          default: ''
+
+        - question_name: Target Host
+          question_description: Hostname or IP of the affected managed node
+          required: true
+          type: text
+          variable: ai_inference_target_host
+          min: 0
+          max: 1024
+          default: ''
+
+        - question_name: Impact
+          question_description: Incident impact level
+          required: false
+          type: multiplechoice
+          variable: servicenow_incident_impact
+          choices:
+            - low
+            - medium
+            - high
+          default: medium
+
+        - question_name: Urgency
+          question_description: Incident urgency level
+          required: false
+          type: multiplechoice
+          variable: servicenow_incident_urgency
+          choices:
+            - low
+            - medium
+            - high
+          default: medium
 
     simplified_workflow_nodes:
       - identifier: create-snow-incident
