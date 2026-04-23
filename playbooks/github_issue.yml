@@ -9,10 +9,11 @@
     # target_host: ""
     # ai_inference_recommendation: {}   # fact set by ai_remediation workflow
     # service_log_output: ""             # CPU data passed from cpu_check via set_stats
+    # ai_inference_aap_job_templates: [] # list of templates from ai_remediation
 
     github_issue_repo: "{{ lookup('env', 'GITHUB_REPO') | default('Megalith-Development/Ansible-Demo-AIOps') }}"
     github_issue_token: "{{ vault_github_token }}"
-    github_issue_title: "[AIOps] Manual remediation required — {{ target_host }}"
+    github_issue_title: "[AIOps] Manual remediation required — {{ target_host | default('Unknown Host') }}"
     github_issue_body: |
       ## ⚠️ Why Human Escalation Was Needed
 

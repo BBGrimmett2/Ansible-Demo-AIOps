@@ -28,6 +28,13 @@
       ansible.builtin.import_role:
         name: ai_inference
 
+    - name: Publish AI recommendation to downstream workflow nodes
+      ansible.builtin.set_stats:
+        data:
+          ai_inference_recommendation: "{{ ai_inference_recommendation }}"
+          ai_inference_aap_job_templates: "{{ ai_inference_aap_job_templates }}"
+        per_host: false
+
     - name: Launch AAP job template for automated remediation
       ansible.builtin.uri:
         url: "https://{{ aap_host }}/api/v2/job_templates/{{ ai_inference_recommendation['job_template'] | urlencode }}/launch/"
