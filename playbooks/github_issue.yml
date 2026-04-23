@@ -6,13 +6,13 @@
   vars:
     # --- passed in from EDA / extra vars ---
     # ai_inference_error_message: ""
-    # ai_inference_target_host: ""
+    # target_host: ""
     # ai_inference_recommendation: {}   # fact set by ai_remediation workflow
     # service_log_output: ""             # CPU data passed from cpu_check via set_stats
 
     github_issue_repo: "{{ lookup('env', 'GITHUB_REPO') | default('Megalith-Development/Ansible-Demo-AIOps') }}"
     github_issue_token: "{{ vault_github_token }}"
-    github_issue_title: "[AIOps] Manual remediation required — {{ ai_inference_target_host }}"
+    github_issue_title: "[AIOps] Manual remediation required — {{ target_host }}"
     github_issue_body: |
       ## ⚠️ Why Human Escalation Was Needed
 
@@ -67,7 +67,7 @@
 
       ## Context
 
-      - **Host:** `{{ ai_inference_target_host }}`
+      - **Host:** `{{ target_host }}`
       - **Workflow:** AI Ops - CPU Remediation Workflow
 
       ---

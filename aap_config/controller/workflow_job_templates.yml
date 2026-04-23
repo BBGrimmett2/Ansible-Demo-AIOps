@@ -32,7 +32,7 @@ controller_workflows:
           question_description: Hostname or IP of the affected managed node
           required: true
           type: text
-          variable: ai_inference_target_host
+          variable: target_host
           min: 0
           max: 1024
           default: ''

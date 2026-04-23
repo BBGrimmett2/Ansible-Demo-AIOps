@@ -139,7 +139,7 @@ controller_templates:
           required: true
         - question_name: Target Host
           question_description: Hostname or IP of the affected managed node
-          variable: ai_inference_target_host
+          variable: target_host
           type: text
           required: true
 
@@ -249,6 +249,6 @@ controller_templates:
           required: true
         - question_name: Target Host
           question_description: Hostname or IP of the affected managed node
-          variable: ai_inference_target_host
+          variable: target_host
           type: text
           required: true
