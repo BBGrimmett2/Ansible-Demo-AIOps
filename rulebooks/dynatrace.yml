@@ -9,7 +9,7 @@
 
   rules:
     - name: High CPU Usage Detected
-      condition: event is defined 
+      condition: event.payload is defined
       action:
         debug:
           msg: "High CPU usage detected in Dynatrace event stream! Event details: {{ event }}"
