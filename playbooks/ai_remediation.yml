@@ -10,7 +10,7 @@
     # ai_inference_api_key: "{{ vault_ai_api_key }}"
 
     # Map target_host to ai_inference_target_host for the AI inference role
-    ai_inference_target_host: "{{ target_host }}"
+    ai_inference_target_host: "{{ target_host | default('localhost') }}"
 
     # service_log_output and max_tokens are passed from previous workflow node via set_stats
     ai_inference_extra_context: "{{ service_log_output | default('') }}"
