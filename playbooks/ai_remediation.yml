@@ -57,6 +57,7 @@
         body:
           limit: "{{ target_host }}"
           extra_vars:
+            target_host: "{{ target_host }}"
             error_message: "{{ ai_inference_error_message }}"
         body_format: json
         status_code: 201
