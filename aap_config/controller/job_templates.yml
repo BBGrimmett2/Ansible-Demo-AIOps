@@ -18,6 +18,25 @@ controller_templates:
       cpu_stress_load: 85
       cpu_stress_timeout: 300
 
+  - name: AI Ops - Disk Stress
+    description: >-
+      Stress disk I/O on a target managed node to trigger infrastructure alerts.
+      Used to simulate a non-CPU hardware issue that will cause AI escalation
+      since no disk remediation templates exist.
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/disk_stress.yml
+    inventory: AIOps Managed Nodes
+    credentials:
+      - AIOps Machine
+    ask_limit_on_launch: true
+    labels:
+      - aiops
+    extra_vars:
+      disk_stress_timeout: 300
+      disk_stress_workers: 4
+      disk_stress_file_size_mb: 512
+
   - name: AI Ops - CPU Increase Allocation
     description: >-
       Increase the CPU core count on a Proxmox VM by up to 10% of its current allocation.

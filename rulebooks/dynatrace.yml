@@ -18,6 +18,7 @@
             extra_vars:
               ai_inference_error_message: "Dynatrace Problem: {{ event.payload.eventData.problemTitle }} ({{ event.payload.eventData.problemLevel }}) - Problem ID: {{ event.payload.eventData.problemId }}"
               ai_inference_target_host: "{{ event.payload.eventData.impactedEntitiesId[0].name }}"
+              target_host: "{{ event.payload.eventData.impactedEntitiesId[0].name }}"
               servicenow_incident_impact: medium
               servicenow_incident_urgency: medium
               servicenow_incident_short_description: "{{ event.payload.eventData.problemTitle }} on {{ event.payload.eventData.impactedEntitiesId[0].name }}"

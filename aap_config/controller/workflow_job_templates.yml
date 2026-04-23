@@ -67,8 +67,6 @@ controller_workflows:
 
       - identifier: cpu-check
         unified_job_template: AI Ops - CPU Check
-        extra_data:
-          target_host: "{{ ai_inference_target_host }}"
         success_nodes:
           - ai-remediation
 
