@@ -79,6 +79,20 @@ controller_templates:
           default: SIGTERM
           choices: "SIGTERM\nSIGKILL"
 
+  - name: AI Ops - CPU Check
+    description: >-
+      Collect CPU usage snapshot from the target host and pass it to the next workflow node
+      via set_stats. Provides detailed CPU context for AI inference.
+    organization: AIOps
+    project: Ansible AIOps
+    playbook: playbooks/cpu_check.yml
+    inventory: AIOps Managed Nodes
+    credentials:
+      - AIOps Machine
+    ask_variables_on_launch: true
+    labels:
+      - aiops
+
   - name: AI Ops - AI Remediation
     description: >-
       Send the error context to an AI model for inference. The AI analyzes the error,

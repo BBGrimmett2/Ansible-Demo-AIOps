@@ -63,6 +63,13 @@ controller_workflows:
       - identifier: create-snow-incident
         unified_job_template: AI Ops - SNOW Create Incident
         success_nodes:
+          - cpu-check
+
+      - identifier: cpu-check
+        unified_job_template: AI Ops - CPU Check
+        extra_data:
+          target_host: "{{ ai_inference_target_host }}"
+        success_nodes:
           - ai-remediation
 
       - identifier: ai-remediation
