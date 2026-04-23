@@ -20,3 +20,5 @@
               ai_inference_target_host: "{{ event.payload.eventData.impactedEntitiesId[0].name }}"
               servicenow_incident_impact: medium
               servicenow_incident_urgency: medium
+              servicenow_incident_short_description: "{{ event.payload.eventData.problemTitle }} on {{ event.payload.eventData.impactedEntitiesId[0].name }}"
+              servicenow_incident_description: "Dynatrace detected {{ event.payload.eventData.problemTitle }} ({{ event.payload.eventData.problemLevel }}) on host {{ event.payload.eventData.impactedEntitiesId[0].name }}. Problem ID: {{ event.payload.eventData.problemId }}. Entity ID: {{ event.payload.eventData.impactedEntitiesId[0].entityId.id }}."
