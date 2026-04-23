@@ -37,7 +37,7 @@
 
     - name: Query AAP for job template ID
       ansible.builtin.uri:
-        url: "https://{{ aap_host }}/api/v2/job_templates/?name={{ ai_inference_recommendation['job_template'] | urlencode }}"
+        url: "https://{{ aap_host }}/api/controller/v2/job_templates/?name={{ ai_inference_recommendation['job_template'] | urlencode }}"
         method: GET
         headers:
           Authorization: "Bearer {{ aap_token }}"
@@ -49,7 +49,7 @@
 
     - name: Launch AAP job template for automated remediation
       ansible.builtin.uri:
-        url: "https://{{ aap_host }}/api/v2/job_templates/{{ __job_template_lookup.json.results[0].id }}/launch/"
+        url: "https://{{ aap_host }}/api/controller/v2/job_templates/{{ __job_template_lookup.json.results[0].id }}/launch/"
         method: POST
         headers:
           Authorization: "Bearer {{ aap_token }}"
