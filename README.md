@@ -67,9 +67,13 @@ flowchart TD
 │   ├── controller/                 # Controller-specific: inventories, templates, workflows
 │   │   ├── inventories.yml
 │   │   ├── job_templates.yml
+│   │   ├── labels.yml
 │   │   └── workflow_job_templates.yml
 │   └── eda/                        # EDA projects and rulebook activations
 │       ├── activations.yml
+│       ├── credentials.yml
+│       ├── decision_environments.yml
+│       ├── event_streams.yml
 │       └── projects.yml
 ├── collections/
 │   └── requirements.yml            # Collection dependencies
@@ -77,9 +81,11 @@ flowchart TD
 ├── playbooks/
 │   ├── configure_aap.yml           # Dispatch playbook — provisions all AAP resources
 │   ├── ai_remediation.yml          # AI inference → AAP job template launch
+│   ├── cpu_check.yml               # Collect CPU usage snapshot for AI inference
 │   ├── cpu_stress.yml              # Trigger high CPU utilization on managed nodes
 │   ├── cpu_increase_allocation.yml # Proxmox VM CPU increase (≤10%)
 │   ├── cpu_kill_top_process.yml    # Kill top CPU-consuming process
+│   ├── memory_stress.yml           # Trigger high memory utilization for escalation testing
 │   ├── snow_create_incident.yml    # Open a ServiceNow incident
 │   ├── snow_update_incident.yml    # Update a ServiceNow incident
 │   └── github_issue.yml            # Open a GitHub issue for manual remediation
@@ -89,8 +95,7 @@ flowchart TD
 │   ├── github_issue/               # Open a GitHub issue via API
 │   └── servicenow_incident/        # tasks_from: create | update
 ├── rulebooks/
-│   ├── webhook_rulebook.yml        # Listen for webhook alerts (production)
-│   └── range_rulebook.yml          # Simulated event source (demo/testing)
+│   └── dynatrace.yml               # Webhook listener for Dynatrace infrastructure alerts
 ├── vault.yml                       # Encrypted credentials (ansible-vault)
 └── .github/workflows/validate.yml  # CI: ansible-lint + spell check
 ```
@@ -102,7 +107,7 @@ flowchart TD
 | Role | Entry Points | Purpose |
 |---|---|---|
 | `ai_inference` | `main` | Sends error context to an OpenAI-compatible API; returns `ai_inference_recommendation` fact with action, job template name, and ServiceNow content |
-| `cpu_remediation` | `increase_cpu`, `kill_top_process` | Increases Proxmox VM CPU by up to 10%, or kills the top CPU-consuming process on a managed node |
+| `cpu_remediation` | `check_cpu`, `increase_cpu`, `kill_top_process` | Collects CPU usage snapshot, increases Proxmox VM CPU by up to 10%, or kills the top CPU-consuming process on a managed node |
 | `servicenow_incident` | `create`, `update` | Creates or updates a ServiceNow incident via `servicenow.itsm` |
 | `github_issue` | `main` | Opens a GitHub issue via the GitHub REST API |
 
@@ -113,6 +118,8 @@ flowchart TD
 | Template | Playbook | Purpose |
 |---|---|---|
 | AI Ops - CPU Stress | `cpu_stress.yml` | Pin all vCPUs to >80% to trigger an alert |
+| AI Ops - Memory Stress | `memory_stress.yml` | Allocate memory to trigger infrastructure alerts (escalation testing) |
+| AI Ops - CPU Check | `cpu_check.yml` | Collect CPU usage snapshot for AI inference |
 | AI Ops - CPU Increase Allocation | `cpu_increase_allocation.yml` | Increase Proxmox VM CPU (automated remediation) |
 | AI Ops - CPU Kill Top Process | `cpu_kill_top_process.yml` | Kill top CPU process (automated remediation) |
 | AI Ops - AI Remediation | `ai_remediation.yml` | AI inference + launch matched job template |

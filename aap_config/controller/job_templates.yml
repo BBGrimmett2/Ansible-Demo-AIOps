@@ -15,7 +15,6 @@ controller_templates:
     labels:
       - aiops
     extra_vars:
-      cpu_stress_load: 85
       cpu_stress_timeout: 300
 
   - name: AI Ops - Memory Stress
@@ -34,7 +33,7 @@ controller_templates:
       - aiops
     extra_vars:
       memory_stress_timeout: 300
-      memory_stress_workers: 4
+      memory_stress_workers: 6
       memory_stress_size_mb: 512
 
   - name: AI Ops - CPU Increase Allocation
