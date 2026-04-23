@@ -155,7 +155,73 @@ ansible-galaxy collection install -r collections/requirements.yml
 
 ### Configure credentials
 
-Fill in [vault.yml](vault.yml) and encrypt it:
+Fill in [vault.yml](vault.yml) with your environment-specific values and encrypt it:
+
+<details>
+<summary>Example vault.yml template</summary>
+
+```yaml
+---
+# Ansible Vault — encrypt this file before committing:
+#   ansible-vault encrypt vault.yml
+#
+# To edit in place after encryption:
+#   ansible-vault edit vault.yml
+#
+# To run the configure_aap playbook with vault:
+#   ansible-playbook playbooks/configure_aap.yml -e @vault.yml --ask-vault-pass
+#   ansible-playbook playbooks/configure_aap.yml -e @vault.yml --vault-password-file .vault_pass
+
+# --- AAP Configuration ---
+vault_aap_hostname: "aap-controller.example.com"         # e.g. aap.example.com
+vault_aap_token: "REDACTED_AAP_TOKEN"            # AAP personal access token or service account token
+
+# --- Phoenix AAP (EDA Controller Credential) ---
+# vault_phoenix_aap_host: "https://aap-controller.example.com/api/controller/"
+vault_phoenix_aap_host: "https://aap-controller.example.com/api/controller/"  # AAP Controller API URL
+vault_phoenix_aap_username: "admin"
+# vault_phoenix_aap_password: "REDACTED_PASSWORD"
+vault_phoenix_aap_password: "REDACTED_PASSWORD"  # AAP admin password
+
+# --- AI API ---
+vault_ai_api_url: "https://api.openai.com/v1/chat/completions"            # e.g. https://api.openai.com/v1/chat/completions
+vault_ai_model: "gpt-4o"              # e.g. gpt-4o
+vault_ai_api_key: "REDACTED_API_KEY"            # API key
+
+# --- Proxmox ---
+vault_proxmox_api_host: "https://proxmox.example.com:8006"      # e.g. proxmox.example.com
+vault_proxmox_api_user: "ansible@pve"      # e.g. ansible@pve
+vault_proxmox_api_token_id: "automation"  # e.g. automation
+vault_proxmox_token_secret: "REDACTED_UUID"  # Proxmox API token UUID
+vault_proxmox_node: "pve"      # Proxmox node name where the VMs are located, e.g. pve
+
+# --- ServiceNow ---
+vault_snow_instance_url: "https://instance.service-now.com/"     # e.g. https://instance.service-now.com
+vault_snow_username: "api-user"         # ServiceNow automation account username
+vault_snow_password: "REDACTED_PASSWORD"         # ServiceNow automation account password
+
+# --- GitHub ---
+vault_github_token: "REDACTED_GITHUB_TOKEN"          # GitHub personal access token (scope: repo)
+vault_github_repo: "owner/repository"           # owner/repo format for GitHub API
+vault_github_repo_url: "https://github.com/owner/repository.git"  # Full URL for SCM operations
+vault_github_username: "github_username"       # GitHub username for SCM credential
+
+# --- Machine ---
+vault_machine_username: "ansible"      # e.g. ansible
+vault_machine_password: "REDACTED_PASSWORD"      # Password for the managed Linux node user
+
+# --- Dynatrace ---
+vault_dynatrace_token: "REDACTED_TOKEN"      # Dynatrace API token for event stream authentication
+
+# --- Red Hat Container Registry ---
+vault_rh_container_registry_username: "org_id|service_account"  # Red Hat Container Registry username (often an organization ID)
+vault_rh_container_registry_token: "REDACTED_JWT_TOKEN"  # Red Hat Container Registry token (often prefixed with 'rhcc-')
+vault_rh_container_registry_host: "registry.redhat.io"  # Red Hat Container Registry host
+```
+
+</details>
+
+Encrypt the vault file before committing:
 
 ```bash
 ansible-vault encrypt vault.yml
