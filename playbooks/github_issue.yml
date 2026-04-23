@@ -19,7 +19,7 @@
 
       The AI-driven remediation workflow could not automatically resolve this issue because:
 
-      **{{ ai_inference_recommendation['reasoning'] }}**
+      **{{ ai_inference_recommendation.reasoning | default('AI inference failed or was unable to provide a recommendation.') }}**
 
       The AI evaluated all available job templates and determined that none were appropriate for this specific failure scenario. Manual intervention is required to either:
       - Create a new automation for this error type, OR
@@ -30,7 +30,7 @@
       ## Error Details
 
       ```
-      {{ ai_inference_error_message }}
+      {{ ai_inference_error_message | default('No error message available') }}
       ```
 
       ## CPU Context Data
@@ -50,6 +50,8 @@
 
       {% for template in ai_inference_aap_job_templates | default([]) %}
       - {{ template }}
+      {% else %}
+      - No job templates were available for evaluation
       {% endfor %}
 
       ## Suggested New Remediation
@@ -63,12 +65,12 @@
 
       ### ServiceNow Details
 
-      - **Summary:** {{ ai_inference_recommendation['snow_summary'] }}
-      - **Description:** {{ ai_inference_recommendation['snow_description'] }}
+      - **Summary:** {{ ai_inference_recommendation.snow_summary | default('N/A') }}
+      - **Description:** {{ ai_inference_recommendation.snow_description | default('N/A') }}
 
       ## Context
 
-      - **Host:** `{{ target_host }}`
+      - **Host:** `{{ target_host | default('Unknown') }}`
       - **Workflow:** AI Ops - CPU Remediation Workflow
 
       ---
