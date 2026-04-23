@@ -49,6 +49,7 @@
         body_format: json
         status_code: 201
         timeout: 30
+        validate_certs: false
       when: ai_inference_recommendation['action'] == 'remediate'
       changed_when: true
 
